@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banner to Talon Course Mapping & Roster Converter</title>
+    <title>USU Aviation - Banner to Talon Roster Converter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -32,7 +32,7 @@
         }
         th, td {
             border: 1px solid #dddddd;
-            padding: 8px 5px;
+            padding: 8px 6px;
             white-space: nowrap;
         }
         th {
@@ -89,14 +89,24 @@
         .output-table {
             margin-top: 15px;
         }
+        .badge {
+            background-color: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .badge-unmapped {
+            background-color: #dc3545;
+        }
     </style>
 </head>
 <body>
 
-    <!-- SECTION 1: MAPPING SELECTION -->
+    <!-- SECTION 1: MAPPING RULES -->
     <div class="card">
-        <h2>1. USU Aviation: Banner to Talon Course Mapping Rules</h2>
-        <p>Select which Talon Course corresponds to each Banner Course:</p>
+        <h2>1. Banner to Talon Course Mapping Rules</h2>
+        <p>Select the corresponding Talon Course for each USU Banner Course:</p>
         <form id="mappingForm">
             <div class="table-container">
                 <table>
@@ -120,7 +130,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr data-code="2350">
                             <td class="course-name" data-banner="Private Pilot Certification 2350">Private Pilot Certification 2350</td>
                             <td><input type="radio" name="b_2350" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_2350" value="FW ACCLRATD COMM"></td>
@@ -137,7 +147,7 @@
                             <td><input type="radio" name="b_2350" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_2350" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="2450">
                             <td class="course-name" data-banner="Cross Country - Commercial Stage 1 2450">Cross Country - Commercial Stage 1 2450</td>
                             <td><input type="radio" name="b_2450" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_2450" value="FW ACCLRATD COMM"></td>
@@ -154,7 +164,7 @@
                             <td><input type="radio" name="b_2450" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_2450" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="2451">
                             <td class="course-name" data-banner="Challenge Cross Country - Commercial Stage 1 2451">Challenge Cross Country - Commercial Stage 1 2451</td>
                             <td><input type="radio" name="b_2451" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_2451" value="FW ACCLRATD COMM"></td>
@@ -171,7 +181,7 @@
                             <td><input type="radio" name="b_2451" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_2451" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="2540">
                             <td class="course-name" data-banner="Instrument Pilot Certification 2540">Instrument Pilot Certification 2540</td>
                             <td><input type="radio" name="b_2540" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_2540" value="FW ACCLRATD COMM"></td>
@@ -188,7 +198,7 @@
                             <td><input type="radio" name="b_2540" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_2540" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="2660">
                             <td class="course-name" data-banner="Advanced Maneuvers - Commercial Stage 2 2660">Advanced Maneuvers - Commercial Stage 2 2660</td>
                             <td><input type="radio" name="b_2660" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_2660" value="FW ACCLRATD COMM"></td>
@@ -205,7 +215,7 @@
                             <td><input type="radio" name="b_2660" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_2660" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="3410">
                             <td class="course-name" data-banner="Commercial Single Engine Certification - Commercial Stage 3 3410">Commercial Single Engine Certification - Commercial Stage 3 3410</td>
                             <td><input type="radio" name="b_3410" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_3410" value="FW ACCLRATD COMM"></td>
@@ -222,7 +232,7 @@
                             <td><input type="radio" name="b_3410" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_3410" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="3740">
                             <td class="course-name" data-banner="CFI Certification 3740">CFI Certification 3740</td>
                             <td><input type="radio" name="b_3740" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_3740" value="FW ACCLRATD COMM"></td>
@@ -239,7 +249,7 @@
                             <td><input type="radio" name="b_3740" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_3740" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr>
+                        <tr data-code="3880">
                             <td class="course-name" data-banner="Commercial Multi-Engine Add-On 3880">Commercial Multi-Engine Add-On 3880</td>
                             <td><input type="radio" name="b_3880" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_3880" value="FW ACCLRATD COMM"></td>
@@ -267,41 +277,69 @@
         <h2>2. Load & Convert Course Roster</h2>
         
         <div class="file-input-group">
-            <label for="fileInput"><strong>Option A: Upload Roster CSV File</strong></label><br>
+            <label for="fileInput"><strong>Upload Roster File (CourseRoster.csv):</strong></label><br>
             <input type="file" id="fileInput" accept=".csv, .txt">
         </div>
 
         <div>
-            <label for="rosterInput"><strong>Option B: Or Paste CSV/Text Data Here:</strong></label><br>
-            <small>Format expected: <i>Student ID, Student Name, Banner Course</i></small><br>
-            <textarea id="rosterInput" placeholder="A00123456, John Doe, Private Pilot Certification 2350
-A00987654, Jane Smith, Instrument Pilot Certification 2540
-A00555444, Bob Johnson, CFI Certification 3740"></textarea>
+            <label for="rosterInput"><strong>Or Paste Raw CSV Roster Content Here:</strong></label><br>
+            <textarea id="rosterInput" placeholder="Term,CRN,Subject,Course,Section,A Number,Last Name,First Name,Email..."></textarea>
         </div>
 
         <button class="btn" onclick="convertRoster()">Convert Roster to Talon</button>
-        <button class="btn btn-success" id="downloadBtn" style="display:none;" onclick="downloadCSV()">Download Converted CSV</button>
+        <button class="btn btn-success" id="downloadBtn" style="display:none;" onclick="downloadCSV()">Download Converted Roster CSV</button>
 
         <div class="output-table" id="outputArea"></div>
     </div>
 
     <script>
-        let convertedData = [];
+        let fullConvertedRows = [];
+        let originalHeaders = [];
 
-        // Build mapping rules from currently selected radio buttons
-        function getMappingRules() {
-            const rules = {};
+        // Simple Robust CSV parser handling quoted values
+        function parseCSVLine(text) {
+            let result = [];
+            let cur = '';
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                if (c === '"') {
+                    if (inQuotes && text[i+1] === '"') {
+                        cur += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    result.push(cur.trim());
+                    cur = '';
+                } else {
+                    cur += c;
+                }
+            }
+            result.push(cur.trim());
+            return result;
+        }
+
+        // Get live radio button selections keyed by course code (e.g. "2350") & full name
+        function getMappings() {
+            const codeMap = {};
+            const titleMap = {};
             const rows = document.querySelectorAll("#mappingForm tbody tr");
             
             rows.forEach(row => {
+                const code = row.getAttribute('data-code');
                 const bannerName = row.querySelector('.course-name').getAttribute('data-banner');
-                const checkedRadio = row.querySelector('input[type="radio"]:checked');
-                rules[bannerName.trim()] = checkedRadio ? checkedRadio.value : "UNMAPPED";
+                const checked = row.querySelector('input[type="radio"]:checked');
+                const talonCourse = checked ? checked.value : "UNMAPPED";
+                
+                if (code) codeMap[code] = talonCourse;
+                if (bannerName) titleMap[bannerName.toLowerCase()] = talonCourse;
             });
-            return rules;
+            return { codeMap, titleMap };
         }
 
-        // Handle uploaded CSV file loading
+        // Handle uploaded CSV file
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -312,69 +350,124 @@ A00555444, Bob Johnson, CFI Certification 3740"></textarea>
             reader.readAsText(file);
         });
 
-        // Convert the input roster using the live mapping rules
+        // Convert the loaded roster
         function convertRoster() {
-            const rules = getMappingRules();
+            const { codeMap, titleMap } = getMappings();
             const inputTxt = document.getElementById('rosterInput').value.trim();
             
             if (!inputTxt) {
-                alert("Please paste data or upload a file first.");
+                alert("Please upload CourseRoster.csv or paste CSV text first.");
                 return;
             }
 
-            const lines = inputTxt.split(/\r?\n/);
-            convertedData = [];
-            let htmlOutput = "<h3>Converted Roster Output</h3><table><thead><tr><th>Student ID / Info</th><th>Student Name</th><th>Original Banner Course</th><th>Mapped Talon Course</th></tr></thead><tbody>";
+            const rawLines = inputTxt.split(/\r?\n/).filter(line => line.trim().length > 0);
+            if (rawLines.length === 0) return;
 
-            lines.forEach((line) => {
-                if (!line.trim()) return;
-                
-                // Parse CSV fields (splitting by comma)
-                const parts = line.split(',').map(item => item.trim());
-                
-                let id = parts[0] || "";
-                let name = parts[1] || "";
-                let bannerCourse = parts[2] || parts[0]; // Fallback if only course name is pasted
+            const headerRow = parseCSVLine(rawLines[0]);
+            
+            // Identify key Banner column indexes
+            let colANumber = headerRow.findIndex(h => h.toLowerCase().includes('a number') || h.toLowerCase().includes('id'));
+            let colLastName = headerRow.findIndex(h => h.toLowerCase().includes('last name'));
+            let colFirstName = headerRow.findIndex(h => h.toLowerCase().includes('first name'));
+            let colSubject = headerRow.findIndex(h => h.toLowerCase().includes('subject'));
+            let colCourse = headerRow.findIndex(h => h.toLowerCase().includes('course'));
+            let colEmail = headerRow.findIndex(h => h.toLowerCase().includes('email'));
 
-                // Find matching Talon Course
-                let talonMatch = "UNMAPPED / NOT FOUND";
-                
-                // Fuzzy match against active mappings
-                for (let key in rules) {
-                    if (bannerCourse.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(bannerCourse.toLowerCase())) {
-                        talonMatch = rules[key];
+            let hasHeader = (colANumber !== -1 || colCourse !== -1);
+            let startIndex = hasHeader ? 1 : 0;
+            
+            originalHeaders = hasHeader ? headerRow : ['Student ID', 'Last Name', 'First Name', 'Banner Course'];
+            if (!originalHeaders.includes('Talon Course')) {
+                originalHeaders.push('Talon Course');
+            }
+
+            fullConvertedRows = [];
+            let tableHtml = `<h3>Converted Roster (${rawLines.length - startIndex} Students)</h3>`;
+            tableHtml += `<table><thead><tr>
+                <th>A Number</th>
+                <th>Student Name</th>
+                <th>Subject / Course</th>
+                <th>Matched Talon Course</th>
+                <th>Email</th>
+            </tr></thead><tbody>`;
+
+            for (let i = startIndex; i < rawLines.length; i++) {
+                const cols = parseCSVLine(rawLines[i]);
+                if (cols.length === 0) continue;
+
+                let aNum = colANumber !== -1 ? cols[colANumber] : (cols[0] || '');
+                let lastName = colLastName !== -1 ? cols[colLastName] : (cols[1] || '');
+                let firstName = colFirstName !== -1 ? cols[colFirstName] : (cols[2] || '');
+                let subject = colSubject !== -1 ? cols[colSubject] : '';
+                let courseVal = colCourse !== -1 ? cols[colCourse] : (cols[3] || '');
+                let email = colEmail !== -1 ? cols[colEmail] : '';
+
+                let displayCourse = subject ? `${subject} ${courseVal}` : courseVal;
+
+                // Match algorithm: 1) numeric course code, 2) title text
+                let talonMatch = "UNMAPPED";
+                let matched = false;
+
+                // Match numeric code (e.g., 2350)
+                for (let code in codeMap) {
+                    if (courseVal.toString().trim() === code || displayCourse.includes(code)) {
+                        talonMatch = codeMap[code];
+                        matched = true;
                         break;
                     }
                 }
 
-                convertedData.push({ id, name, bannerCourse, talonMatch });
+                // Fallback fuzzy title match
+                if (!matched) {
+                    for (let title in titleMap) {
+                        if (displayCourse.toLowerCase().includes(title) || title.includes(displayCourse.toLowerCase())) {
+                            talonMatch = titleMap[title];
+                            matched = true;
+                            break;
+                        }
+                    }
+                }
 
-                htmlOutput += `<tr>
-                    <td>${id}</td>
-                    <td>${name}</td>
-                    <td>${bannerCourse}</td>
-                    <td style="font-weight:bold; color:#003262;">${talonMatch}</td>
+                // Create full record for export
+                let updatedRow = [...cols];
+                let talonColIdx = originalHeaders.indexOf('Talon Course');
+                if (talonColIdx < updatedRow.length) {
+                    updatedRow[talonColIdx] = talonMatch;
+                } else {
+                    updatedRow.push(talonMatch);
+                }
+                fullConvertedRows.push(updatedRow);
+
+                let badgeClass = matched ? 'badge' : 'badge badge-unmapped';
+
+                tableHtml += `<tr>
+                    <td>${aNum}</td>
+                    <td style="text-align:left;">${lastName}${lastName && firstName ? ', ' : ''}${firstName}</td>
+                    <td>${displayCourse}</td>
+                    <td><span class="${badgeClass}">${talonMatch}</span></td>
+                    <td style="text-align:left;">${email}</td>
                 </tr>`;
-            });
+            }
 
-            htmlOutput += "</tbody></table>";
-            document.getElementById('outputArea').innerHTML = htmlOutput;
-            document.getElementById('downloadBtn').style.display = "inline-block";
+            tableHtml += `</tbody></table>`;
+            document.getElementById('outputArea').innerHTML = tableHtml;
+            document.getElementById('downloadBtn').style.display = 'inline-block';
         }
 
-        // Export converted data to downloadable CSV
+        // Export converted file back to CSV format
         function downloadCSV() {
-            if (convertedData.length === 0) return;
+            if (fullConvertedRows.length === 0) return;
 
-            let csvContent = "data:text/csv;charset=utf-8,Student ID,Student Name,Banner Course,Talon Course\n";
-            convertedData.forEach(row => {
-                csvContent += `"${row.id}","${row.name}","${row.bannerCourse}","${row.talonMatch}"\n`;
+            let csvStr = originalHeaders.map(h => `"${h}"`).join(',') + '\n';
+            fullConvertedRows.forEach(row => {
+                csvStr += row.map(val => `"${(val || '').replace(/"/g, '""')}"`).join(',') + '\n';
             });
 
-            const encodedUri = encodeURI(csvContent);
+            const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Talon_Converted_Roster.csv");
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Converted_Talon_Roster.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
