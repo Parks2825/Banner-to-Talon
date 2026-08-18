@@ -3,311 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Matcher Tool with Location</title>
-    <!-- SheetJS for XLS/XLSX parsing -->
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <title>Banner to Talon Course Mapping</title>
     <style>
-        :root {
-            --primary: #2563eb;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --border: #e2e8f0;
-            --text: #0f172a;
-        }
-
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 2rem;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f9f9f9;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        h2 {
+            color: #003262; /* USU Blue */
         }
-
-        h1 { margin-top: 0; }
-
-        .input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 1.5rem;
+        .table-container {
+            overflow-x: auto;
+            background: #fff;
+            padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-
-        .label-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        label {
-            font-weight: 600;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        .file-label {
-            background-color: #f1f5f9;
-            color: var(--text);
-            padding: 0.35rem 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .file-label:hover {
-            background-color: #e2e8f0;
-        }
-
-        textarea {
-            width: 100%;
-            height: 200px;
-            box-sizing: border-box;
-            border: 1px solid var(--border);
-            border-radius: 4px;
-            padding: 0.75rem;
-            font-family: monospace;
-            resize: vertical;
-        }
-
-        .btn-match {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            transition: background 0.2s;
-        }
-
-        .btn-match:hover {
-            background-color: #1d4ed8;
-        }
-
-        .results {
-            margin-top: 2rem;
-        }
-
         table {
-            width: 100%;
             border-collapse: collapse;
-            background: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            width: 100%;
+            font-size: 13px;
+            text-align: center;
         }
-
         th, td {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
+            border: 1px solid #dddddd;
+            padding: 8px 5px;
+            white-space: nowrap;
         }
-
         th {
-            background-color: #f1f5f9;
-            font-weight: 600;
+            background-color: #003262;
+            color: white;
+            font-weight: bold;
         }
-
-        .no-match {
-            color: #dc2626;
-            font-style: italic;
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
-
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
+        tr:hover {
+            background-color: #e8f4fc;
         }
-
-        .badge-high { background: #dcfce7; color: #166534; }
-        .badge-medium { background: #fef9c3; color: #854d0e; }
-        .badge-none { background: #fee2e2; color: #991b1b; }
+        td.course-name {
+            text-align: left;
+            font-weight: bold;
+            background-color: #fff;
+        }
+        input[type="radio"] {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Course List to Talon Matcher</h1>
-    <p>Upload a CSV/Excel file or paste your Banner course list on the left and your Talon course list on the right.</p>
+    <h2>USU Aviation: Banner to Talon Course Mapping</h2>
 
-    <div class="input-grid">
-        <div class="card">
-            <div class="label-header">
-                <label for="sourceCourses">Banner Course List</label>
-                <label for="bannerFileInput" class="file-label">Upload CSV / XLS</label>
-                <input type="file" id="bannerFileInput" class="file-input" accept=".csv, .xls, .xlsx, .txt" onchange="handleFileUpload(event, 'sourceCourses')">
-            </div>
-            <textarea id="sourceCourses" placeholder="e.g.&#10;AV 2350 - Private Pilot Certification [Logan Main Campus]&#10;MATH 150 Precalculus [Brigham City Campus]"></textarea>
+    <form id="courseMappingForm">
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">Banner Course</th>
+                        <th>AV25XX Time Bldg</th>
+                        <th>FW ACCLRATD COMM</th>
+                        <th>FW AD MAN v2</th>
+                        <th>FW CFI v3 BC</th>
+                        <th>FW CFI v3.2</th>
+                        <th>FW CFI v3.2 BC</th>
+                        <th>FW COM SE v2</th>
+                        <th>FW CXC v2</th>
+                        <th>FW INSTRMNT</th>
+                        <th>FW USU Private2</th>
+                        <th>FW USU PVT2 FP</th>
+                        <th>FW XC v2</th>
+                        <th>USU COMMERCIAL</th>
+                        <th>USU INSTRMNT V3</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Private Pilot Certification 2350 -->
+                    <tr>
+                        <td class="course-name">Private Pilot Certification 2350</td>
+                        <td><input type="radio" name="banner_2350" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_USU_Private2" checked></td>
+                        <td><input type="radio" name="banner_2350" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_2350" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_2350" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_2350" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- Cross Country - Commercial Stage 1 2450 -->
+                    <tr>
+                        <td class="course-name">Cross Country - Commercial Stage 1 2450</td>
+                        <td><input type="radio" name="banner_2450" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_2450" value="FW_XC_v2" checked></td>
+                        <td><input type="radio" name="banner_2450" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_2450" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- Challenge Cross Country - Commercial Stage 1 2451 -->
+                    <tr>
+                        <td class="course-name">Challenge Cross Country - Commercial Stage 1 2451</td>
+                        <td><input type="radio" name="banner_2451" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_CXC_v2" checked></td>
+                        <td><input type="radio" name="banner_2451" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_2451" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_2451" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_2451" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- Instrument Pilot Certification 2540 -->
+                    <tr>
+                        <td class="course-name">Instrument Pilot Certification 2540</td>
+                        <td><input type="radio" name="banner_2540" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_INSTRMNT" checked></td>
+                        <td><input type="radio" name="banner_2540" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_2540" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_2540" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_2540" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- Advanced Maneuvers - Commercial Stage 2 2660 -->
+                    <tr>
+                        <td class="course-name">Advanced Maneuvers - Commercial Stage 2 2660</td>
+                        <td><input type="radio" name="banner_2660" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_AD_MAN_v2" checked></td>
+                        <td><input type="radio" name="banner_2660" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_2660" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_2660" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_2660" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- Commercial Single Engine Certification - Commercial Stage 3 3410 -->
+                    <tr>
+                        <td class="course-name">Commercial Single Engine Certification - Commercial Stage 3 3410</td>
+                        <td><input type="radio" name="banner_3410" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_COM_SE_v2" checked></td>
+                        <td><input type="radio" name="banner_3410" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_3410" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_3410" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_3410" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- CFI Certification 3740 -->
+                    <tr>
+                        <td class="course-name">CFI Certification 3740</td>
+                        <td><input type="radio" name="banner_3740" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_CFI_v3.2" checked></td>
+                        <td><input type="radio" name="banner_3740" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_3740" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_3740" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_3740" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                    <!-- Commercial Multi-Engine Add-On 3880 -->
+                    <tr>
+                        <td class="course-name">Commercial Multi-Engine Add-On 3880</td>
+                        <td><input type="radio" name="banner_3880" value="AV25XX"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_ACCLRATD_COMM"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_AD_MAN_v2"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_CFI_v3_BC"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_CFI_v3.2"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_CFI_v3.2_BC"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_COM_SE_v2"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_CXC_v2"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_INSTRMNT"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_USU_Private2"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_USU_PVT2_FP"></td>
+                        <td><input type="radio" name="banner_3880" value="FW_XC_v2"></td>
+                        <td><input type="radio" name="banner_3880" value="USU_COMMERCIAL"></td>
+                        <td><input type="radio" name="banner_3880" value="USU_INSTRMNT_V3"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
-
-        <div class="card">
-            <div class="label-header">
-                <label for="talonCourses">Talon Course List / URLs</label>
-                <label for="talonFileInput" class="file-label">Upload CSV / XLS</label>
-                <input type="file" id="talonFileInput" class="file-input" accept=".csv, .xls, .xlsx, .txt" onchange="handleFileUpload(event, 'talonCourses')">
-            </div>
-            <textarea id="talonCourses" placeholder="e.g.&#10;FW USU Private2 - USU Private Pilot [Location: USU NEW]&#10;FW USU PVT2 FP - USU Private Pilot - Fixed Pitch Only [Location: USU NEW]"></textarea>
-        </div>
-    </div>
-
-    <button class="btn-match" onclick="matchCourses()">Match Courses</button>
-
-    <div class="results card" id="resultsCard" style="display: none;">
-        <h2>Matched Results</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Banner Course</th>
-                    <th>Location / Campus</th>
-                    <th>Matched Talon Course</th>
-                    <th>Match Quality</th>
-                </tr>
-            </thead>
-            <tbody id="resultsTable"></tbody>
-        </table>
-    </div>
-</div>
-
-<script>
-    function handleFileUpload(event, targetTextareaId) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const fileName = file.name.toLowerCase();
-        const reader = new FileReader();
-
-        if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                
-                const lines = jsonData
-                    .map(row => row.filter(cell => cell !== null && cell !== undefined).join(' | '))
-                    .filter(line => line.trim() !== '');
-                
-                document.getElementById(targetTextareaId).value = lines.join('\n');
-            };
-            reader.readAsArrayBuffer(file);
-        } else {
-            reader.onload = function(e) {
-                document.getElementById(targetTextareaId).value = e.target.result;
-            };
-            reader.readAsText(file);
-        }
-    }
-
-    function extractCode(str) {
-        const match = str.match(/([a-zA-Z]{2,4})\s*[-_]?\s*(\d{3,4})/i);
-        return match ? `${match[1].toUpperCase()}${match[2]}` : null;
-    }
-
-    function extractLocation(str) {
-        const campusMatch = str.match(/(Logan Main Campus|Brigham City Campus|USU Eastern - Price|USU NEW|Location:[^|]*)/i);
-        if (campusMatch) return campusMatch[0].replace('Location:', '').trim();
-        return '—';
-    }
-
-    function calculateSimilarity(str1, str2) {
-        const s1 = str1.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const s2 = str2.toLowerCase().replace(/[^a-z0-9]/g, '');
-        
-        if (s1 === s2) return 1.0;
-        if (s1.length < 2 || s2.length < 2) return 0.0;
-
-        const bigrams1 = new Set();
-        for (let i = 0; i < s1.length - 1; i++) bigrams1.add(s1.substring(i, i + 2));
-
-        let intersection = 0;
-        for (let i = 0; i < s2.length - 1; i++) {
-            const bigram = s2.substring(i, i + 2);
-            if (bigrams1.has(bigram)) intersection++;
-        }
-
-        return (2.0 * intersection) / ((s1.length - 1) + (s2.length - 1));
-    }
-
-    function matchCourses() {
-        const sourceLines = document.getElementById('sourceCourses').value.split('\n').filter(l => l.trim());
-        const talonLines = document.getElementById('talonCourses').value.split('\n').filter(l => l.trim());
-        const tbody = document.getElementById('resultsTable');
-        
-        tbody.innerHTML = '';
-
-        sourceLines.forEach(source => {
-            const sourceCode = extractCode(source);
-            const location = extractLocation(source);
-            let bestMatch = null;
-            let highestScore = 0;
-            let matchType = 'none';
-
-            talonLines.forEach(talon => {
-                const talonCode = extractCode(talon);
-                let score = 0;
-
-                if (sourceCode && talonCode && sourceCode === talonCode) {
-                    score = 0.8 + (calculateSimilarity(source, talon) * 0.2);
-                } else if (source.toLowerCase().includes('private pilot') && (talon.includes('Private2') || talon.includes('PVT2'))) {
-                    score = 0.85;
-                } else {
-                    score = calculateSimilarity(source, talon);
-                }
-
-                if (score > highestScore) {
-                    highestScore = score;
-                    bestMatch = talon;
-                }
-            });
-
-            if (highestScore > 0.6) matchType = 'high';
-            else if (highestScore > 0.3) matchType = 'medium';
-            else { matchType = 'none'; bestMatch = null; }
-
-            const tr = document.createElement('tr');
-            let badgeHtml = '<span class="badge badge-none">No Match</span>';
-            if (matchType === 'high') badgeHtml = '<span class="badge badge-high">High Match</span>';
-            if (matchType === 'medium') badgeHtml = '<span class="badge badge-medium">Partial Match</span>';
-
-            tr.innerHTML = `
-                <td><strong>${escapeHtml(source)}</strong></td>
-                <td>${escapeHtml(location)}</td>
-                <td>${bestMatch ? escapeHtml(bestMatch) : '<span class="no-match">No reliable match found</span>'}</td>
-                <td>${badgeHtml}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById('resultsCard').style.display = 'block';
-    }
-
-    function escapeHtml(text) {
-        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-</script>
+    </form>
 
 </body>
 </html>
