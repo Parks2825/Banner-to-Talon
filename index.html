@@ -305,7 +305,6 @@
     <div class="card">
         <h2>2. Import Banner CSV Roster</h2>
         
-        <!-- Target Location Selector -->
         <div class="form-group">
             <label for="locationSelect">Target Location / Campus:</label>
             <select id="locationSelect">
@@ -389,13 +388,20 @@
             return data;
         }
 
+        // Clean strings for flexible matching
+        function normalizeString(str) {
+            return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+        }
+
         // Get Current Mapping Choices from Form Radios
         function getMappingRules() {
             const form = document.getElementById('mappingForm');
             const formData = new FormData(form);
             const mapping = {};
             for (let [key, value] of formData.entries()) {
-                mapping[key] = value;
+                const cleanKey = key.replace(/^b_/, '');
+                mapping[cleanKey] = value;
+                mapping[normalizeString(cleanKey)] = value;
             }
             return mapping;
         }
@@ -417,17 +423,36 @@
 
             window.processedTalonData = [];
 
-            rows.forEach(row => {
-                const studentId = row['student id'] || row['id'] || row['a-number'] || row['anumber'] || 'N/A';
-                const firstName = row['first name'] || row['firstname'] || row['first'] || '';
-                const middleName = row['middle name'] || row['middlename'] || row['middle'] || '';
-                const lastName = row['last name'] || row['lastname'] || row['last'] || '';
-                const email = row['email'] || row['local_email'] || row['mail'] || '';
-                const username = row['uname'] || row['username'] || studentId;
-                const courseName = row['course'] || row['course name'] || row['course title'] || row['code'] || '';
+            rows.forEach((row, index) => {
+                // Flexible field matching across various Banner CSV headers
+                const studentId = row['student id'] || row['id'] || row['a-number'] || row['anumber'] || row['student_id'] || 'N/A';
+                const firstName = row['first name'] || row['firstname'] || row['first'] || row['fname'] || '';
+                const middleName = row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '';
+                const lastName = row['last name'] || row['lastname'] || row['last'] || row['lname'] || '';
+                const email = row['email'] || row['local_email'] || row['mail'] || row['email_address'] || '';
+                const username = row['uname'] || row['username'] || row['user_id'] || studentId;
+                
+                const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
+                const courseName = rawCourse.trim();
 
-                const mapKey = `b_${courseName.trim()}`;
-                const talonCourse = mappings[mapKey] || 'Unmapped';
+                // Lookup direct match or normalized fuzzy match
+                let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
+                
+                // Fallback: Check for course number embedded in string (e.g. "2350", "2450")
+                if (!talonCourse) {
+                    const numberMatch = courseName.match(/\b(2350|2450|2451|2540|2660|3410|3740|3880)\b/);
+                    if (numberMatch) {
+                        const courseNum = numberMatch[1];
+                        for (let key in mappings) {
+                            if (key.includes(courseNum)) {
+                                talonCourse = mappings[key];
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                talonCourse = talonCourse || 'Unmapped';
                 const isMapped = talonCourse !== 'Unmapped';
 
                 // Display Row in Result Table
@@ -437,14 +462,13 @@
                     <td>${studentId}</td>
                     <td>${firstName}</td>
                     <td>${lastName}</td>
-                    <td>${courseName}</td>
+                    <td>${courseName || '<span style="color:red;">[Course Column Not Found]</span>'}</td>
                     <td><strong>${talonCourse}</strong></td>
                     <td>${isMapped ? '<span class="badge">Mapped</span>' : '<span class="badge badge-unmapped">Unmapped</span>'}</td>
                 `;
                 resultBody.appendChild(tr);
 
                 if (isMapped) {
-                    // Determine location-based mappings
                     const isLogan = selectedLocation.includes("Logan");
                     const persSubtype = isLogan ? "Fixed Wing - Logan" : "Fixed Wing - Eastern";
                     const siteDisname = isLogan ? "USU Logan" : (selectedLocation.includes("Price") ? "USU Price" : "USU Brigham City");
