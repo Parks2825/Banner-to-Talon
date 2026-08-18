@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Matcher Tool</title>
+    <title>Course Matcher Tool with Location</title>
     <!-- SheetJS for XLS/XLSX parsing -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
@@ -159,7 +159,7 @@
                 <label for="bannerFileInput" class="file-label">Upload CSV / XLS</label>
                 <input type="file" id="bannerFileInput" class="file-input" accept=".csv, .xls, .xlsx, .txt" onchange="handleFileUpload(event, 'sourceCourses')">
             </div>
-            <textarea id="sourceCourses" placeholder="e.g.&#10;ENG 101 - Composition I&#10;MATH 150 Precalculus&#10;CS 200: Intro to Python"></textarea>
+            <textarea id="sourceCourses" placeholder="e.g.&#10;AV 2350 - Private Pilot Certification [Logan Main Campus]&#10;MATH 150 Precalculus [Brigham City Campus]"></textarea>
         </div>
 
         <div class="card">
@@ -168,7 +168,7 @@
                 <label for="talonFileInput" class="file-label">Upload CSV / XLS</label>
                 <input type="file" id="talonFileInput" class="file-input" accept=".csv, .xls, .xlsx, .txt" onchange="handleFileUpload(event, 'talonCourses')">
             </div>
-            <textarea id="talonCourses" placeholder="e.g.&#10;2024FA-ENG-101-01 Composition I (https://talon.example.edu/d2l/home/12345)&#10;MATH 150-02 Precalculus - Fall 2024&#10;CS-200 Python Programming"></textarea>
+            <textarea id="talonCourses" placeholder="e.g.&#10;FW USU Private2 - USU Private Pilot [Location: USU NEW]&#10;FW USU PVT2 FP - USU Private Pilot - Fixed Pitch Only [Location: USU NEW]"></textarea>
         </div>
     </div>
 
@@ -180,6 +180,7 @@
             <thead>
                 <tr>
                     <th>Banner Course</th>
+                    <th>Location / Campus</th>
                     <th>Matched Talon Course</th>
                     <th>Match Quality</th>
                 </tr>
@@ -190,7 +191,6 @@
 </div>
 
 <script>
-    // Handles reading CSV, TXT, XLS, and XLSX files directly into textareas
     function handleFileUpload(event, targetTextareaId) {
         const file = event.target.files[0];
         if (!file) return;
@@ -202,24 +202,18 @@
             reader.onload = function(e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
-                
-                // Get the first sheet
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                
-                // Convert sheet to JSON rows
                 const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                 
-                // Convert matrix/rows into line-by-line formatted text
                 const lines = jsonData
-                    .map(row => row.filter(cell => cell !== null && cell !== undefined).join(' '))
+                    .map(row => row.filter(cell => cell !== null && cell !== undefined).join(' | '))
                     .filter(line => line.trim() !== '');
                 
                 document.getElementById(targetTextareaId).value = lines.join('\n');
             };
             reader.readAsArrayBuffer(file);
         } else {
-            // CSV / TXT files
             reader.onload = function(e) {
                 document.getElementById(targetTextareaId).value = e.target.result;
             };
@@ -227,13 +221,17 @@
         }
     }
 
-    // Utility to extract course codes (e.g., ENG 101, MATH-150, CS200)
     function extractCode(str) {
-        const match = str.match(/([a-zA-Z]{2,4})\s*[-_]?\s*(\d{3})/i);
+        const match = str.match(/([a-zA-Z]{2,4})\s*[-_]?\s*(\d{3,4})/i);
         return match ? `${match[1].toUpperCase()}${match[2]}` : null;
     }
 
-    // Basic string similarity calculation (Dice's Coefficient)
+    function extractLocation(str) {
+        const campusMatch = str.match(/(Logan Main Campus|Brigham City Campus|USU Eastern - Price|USU NEW|Location:[^|]*)/i);
+        if (campusMatch) return campusMatch[0].replace('Location:', '').trim();
+        return '—';
+    }
+
     function calculateSimilarity(str1, str2) {
         const s1 = str1.toLowerCase().replace(/[^a-z0-9]/g, '');
         const s2 = str2.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -262,6 +260,7 @@
 
         sourceLines.forEach(source => {
             const sourceCode = extractCode(source);
+            const location = extractLocation(source);
             let bestMatch = null;
             let highestScore = 0;
             let matchType = 'none';
@@ -270,11 +269,11 @@
                 const talonCode = extractCode(talon);
                 let score = 0;
 
-                // Priority 1: Exact Course Code Match (e.g. CS101 matches CS101)
                 if (sourceCode && talonCode && sourceCode === talonCode) {
-                    score = 0.8 + (calculateSimilarity(source, talon) * 0.2); // Boost by title similarity
+                    score = 0.8 + (calculateSimilarity(source, talon) * 0.2);
+                } else if (source.toLowerCase().includes('private pilot') && (talon.includes('Private2') || talon.includes('PVT2'))) {
+                    score = 0.85;
                 } else {
-                    // Priority 2: Overall String Similarity
                     score = calculateSimilarity(source, talon);
                 }
 
@@ -284,25 +283,18 @@
                 }
             });
 
-            // Set threshold badge
-            if (highestScore > 0.6) {
-                matchType = 'high';
-            } else if (highestScore > 0.3) {
-                matchType = 'medium';
-            } else {
-                matchType = 'none';
-                bestMatch = null;
-            }
+            if (highestScore > 0.6) matchType = 'high';
+            else if (highestScore > 0.3) matchType = 'medium';
+            else { matchType = 'none'; bestMatch = null; }
 
-            // Append row to table
             const tr = document.createElement('tr');
-            
             let badgeHtml = '<span class="badge badge-none">No Match</span>';
             if (matchType === 'high') badgeHtml = '<span class="badge badge-high">High Match</span>';
             if (matchType === 'medium') badgeHtml = '<span class="badge badge-medium">Partial Match</span>';
 
             tr.innerHTML = `
                 <td><strong>${escapeHtml(source)}</strong></td>
+                <td>${escapeHtml(location)}</td>
                 <td>${bestMatch ? escapeHtml(bestMatch) : '<span class="no-match">No reliable match found</span>'}</td>
                 <td>${badgeHtml}</td>
             `;
