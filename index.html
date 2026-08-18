@@ -74,8 +74,15 @@
         .btn-success:hover {
             background-color: #218838;
         }
-        .form-group {
+        .form-row {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
             margin-bottom: 15px;
+        }
+        .form-group {
+            flex: 1;
+            min-width: 200px;
         }
         label {
             font-weight: bold;
@@ -85,7 +92,7 @@
         .radio-group {
             display: flex;
             gap: 20px;
-            margin-top: 5px;
+            margin-top: 8px;
         }
         .radio-option {
             display: flex;
@@ -98,9 +105,8 @@
             padding: 8px;
             border-radius: 4px;
             border: 1px solid #ccc;
-        }
-        select {
-            min-width: 200px;
+            width: 100%;
+            box-sizing: border-box;
         }
         .output-table {
             margin-top: 15px;
@@ -297,27 +303,47 @@
     <div class="card">
         <h2>2. Import Banner CSV Rosters</h2>
         
-        <div class="form-group">
-            <label>API Action Mode:</label>
-            <div class="radio-group">
-                <label class="radio-option">
-                    <input type="radio" name="actionType" value="add" checked>
-                    Add Student
-                </label>
-                <label class="radio-option">
-                    <input type="radio" name="actionType" value="modify">
-                    Modify Student
-                </label>
+        <div class="form-row">
+            <div class="form-group">
+                <label>API Action Mode:</label>
+                <div class="radio-group">
+                    <label class="radio-option">
+                        <input type="radio" name="actionType" value="add" checked>
+                        Add Student
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="actionType" value="modify">
+                        Modify Student
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="locationSelect">Target Location / Campus:</label>
+                <select id="locationSelect">
+                    <option value="Logan">Logan</option>
+                    <option value="Price">Price</option>
+                    <option value="Brigham City">Brigham City</option>
+                </select>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="locationSelect">Target Location / Campus:</label>
-            <select id="locationSelect">
-                <option value="Logan">Logan</option>
-                <option value="Price">Price</option>
-                <option value="Brigham City">Brigham City</option>
-            </select>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="semesterSelect">Term Semester:</label>
+                <select id="semesterSelect">
+                    <option value="Fall" selected>Fall</option>
+                    <option value="Spring">Spring</option>
+                    <option value="Summer">Summer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="yearSelect">Term Year:</label>
+                <select id="yearSelect">
+                    <!-- Populated dynamically via JS -->
+                </select>
+            </div>
         </div>
 
         <div class="form-group">
@@ -338,6 +364,7 @@
                     <tr>
                         <th>Source File</th>
                         <th>Action</th>
+                        <th>Term</th>
                         <th>Site</th>
                         <th>Student ID / A-Number</th>
                         <th>First Name</th>
@@ -356,6 +383,17 @@
     </div>
 
     <script>
+        // Populate Year Dropdown (Current year - 1 to Current year + 5)
+        const yearSelect = document.getElementById('yearSelect');
+        const currentYear = new Date().getFullYear();
+        for (let y = currentYear - 1; y <= currentYear + 5; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === currentYear) opt.selected = true;
+            yearSelect.appendChild(opt);
+        }
+
         window.uploadedFiles = [];
 
         document.getElementById('csvFileInput').addEventListener('change', function (e) {
@@ -425,6 +463,11 @@
             const filesData = window.uploadedFiles;
             const selectedLocation = document.getElementById('locationSelect').value;
             const selectedAction = document.querySelector('input[name="actionType"]:checked').value;
+            
+            // Get combined term string
+            const selectedSemester = document.getElementById('semesterSelect').value;
+            const selectedYear = document.getElementById('yearSelect').value;
+            const regTermDisname = `${selectedSemester} ${selectedYear}`;
 
             if (!filesData || filesData.length === 0) {
                 alert('Please upload at least one roster file first.');
@@ -487,6 +530,7 @@
                     tr.innerHTML = `
                         <td style="font-size: 11px; color: #666;">${fileObj.fileName}</td>
                         <td><strong style="color: ${selectedAction === 'add' ? '#28a745' : '#007bff'};">${selectedAction.toUpperCase()}</strong></td>
+                        <td><strong>${regTermDisname}</strong></td>
                         <td>${siteDisname}</td>
                         <td>${studentId}</td>
                         <td>${firstName}</td>
@@ -517,7 +561,7 @@
                             "status": "active",
                             "pers_subtype_disname": persSubtype,
                             "acnt_type_disname": "<default>",
-                            "reg_term_disname": "<default>",
+                            "reg_term_disname": regTermDisname,
                             "curr_lvl1_disname": talonCourse,
                             "curr_status": "active",
                             "first_sched_date": "08 Aug 2026",
