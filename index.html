@@ -496,7 +496,6 @@
                 rows.forEach((row) => {
                     const studentId = row['a-number'] || row['anumber'] || row['a number'] || row['a_number'] || row['student id'] || row['student_id'] || row['id'] || '';
                     
-                    // Preserving raw capitalization from the source
                     const firstName = row['first name'] || row['firstname'] || row['first'] || row['fname'] || '';
                     const middleName = row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '';
                     const lastName = row['last name'] || row['lastname'] || row['last'] || row['lname'] || '';
@@ -505,9 +504,10 @@
                     const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
                     const courseName = rawCourse.trim();
 
-                    // Format: LastName, F.
+                    // Format: LastName, F. trimmed to max 16 characters
                     const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
-                    const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
+                    let rawPersDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
+                    const persDisname = rawPersDisname.slice(0, 16);
 
                     let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
                     
