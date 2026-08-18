@@ -82,6 +82,18 @@
             display: block;
             margin-bottom: 5px;
         }
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: normal;
+            cursor: pointer;
+        }
         select, input[type="file"] {
             padding: 8px;
             border-radius: 4px;
@@ -286,6 +298,20 @@
         <h2>2. Import Banner CSV Rosters</h2>
         
         <div class="form-group">
+            <label>API Action Mode:</label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="actionType" value="add" checked>
+                    Add Student
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="actionType" value="modify">
+                    Modify Student
+                </label>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label for="locationSelect">Target Location / Campus:</label>
             <select id="locationSelect">
                 <option value="Logan">Logan</option>
@@ -311,6 +337,7 @@
                 <thead>
                     <tr>
                         <th>Source File</th>
+                        <th>Action</th>
                         <th>Site</th>
                         <th>Student ID / A-Number</th>
                         <th>First Name</th>
@@ -397,6 +424,7 @@
         document.getElementById('btnProcess').addEventListener('click', function () {
             const filesData = window.uploadedFiles;
             const selectedLocation = document.getElementById('locationSelect').value;
+            const selectedAction = document.querySelector('input[name="actionType"]:checked').value;
 
             if (!filesData || filesData.length === 0) {
                 alert('Please upload at least one roster file first.');
@@ -458,6 +486,7 @@
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td style="font-size: 11px; color: #666;">${fileObj.fileName}</td>
+                        <td><strong style="color: ${selectedAction === 'add' ? '#28a745' : '#007bff'};">${selectedAction.toUpperCase()}</strong></td>
                         <td>${siteDisname}</td>
                         <td>${studentId}</td>
                         <td>${firstName}</td>
@@ -474,7 +503,7 @@
                             "header": "data",
                             "customer_code": "usu",
                             "api_code": "person",
-                            "api_action": "add",
+                            "api_action": selectedAction,
                             "loc_disname": "USU NEW",
                             "pers_type": "student",
                             "pers_disname": persDisname,
