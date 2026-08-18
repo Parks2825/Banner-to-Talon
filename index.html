@@ -1,325 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Roster & Talon Course Mapper</title>
-  <!-- SheetJS Library for Excel Export -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    :root {
-      --primary: #0066cc;
-      --primary-hover: #004d99;
-      --success: #28a745;
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --border: #e0e0e0;
-      --text: #333333;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Matcher Tool</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 0 20px;
-      line-height: 1.5;
-    }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 2rem;
+        }
 
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    h2 {
-      margin-top: 0;
-      color: #111;
-      font-size: 1.4rem;
-      border-bottom: 2px solid var(--bg);
-      padding-bottom: 12px;
-    }
+        h1 { margin-top: 0; }
 
-    .step {
-      margin-bottom: 22px;
-    }
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
 
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-size: 0.9rem;
-    }
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+        }
 
-    input[type="file"], select {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      background-color: #fff;
-      box-sizing: border-box;
-      font-size: 0.9rem;
-    }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
 
-    select:disabled {
-      background-color: #e9ecef;
-      cursor: not-allowed;
-    }
+        textarea {
+            width: 100%;
+            height: 200px;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 0.75rem;
+            font-family: monospace;
+            resize: vertical;
+        }
 
-    button {
-      background-color: var(--primary);
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
-      transition: background-color 0.2s ease;
-    }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
 
-    button:hover {
-      background-color: var(--primary-hover);
-    }
+        button:hover {
+            background-color: #1d4ed8;
+        }
 
-    #status {
-      margin-top: 20px;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      display: none;
-      white-space: pre-wrap;
-    }
+        .results {
+            margin-top: 2rem;
+        }
 
-    #status.info { display: block; background-color: #e2e3e5; color: #383d41; }
-    #status.success { display: block; background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    #status.error { display: block; background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-  </style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        .no-match {
+            color: #dc2626;
+            font-style: italic;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-high { background: #dcfce7; color: #166534; }
+        .badge-medium { background: #fef9c3; color: #854d0e; }
+        .badge-none { background: #fee2e2; color: #991b1b; }
+    </style>
 </head>
 <body>
 
-<div class="card">
-  <h2>Course Roster & Talon Course Mapper</h2>
+<div class="container">
+    <h1>Course List to Talon Matcher</h1>
+    <p>Paste your standard course list on the left and your Talon export/course list on the right.</p>
 
-  <!-- Step 1: Upload CourseList.csv -->
-  <div class="step">
-    <label for="courseListInput">1. Upload CourseList.csv (Reference File):</label>
-    <input type="file" id="courseListInput" accept=".csv, .xlsx, .xls" onchange="loadTalonCourses()">
-  </div>
+    <div class="input-grid">
+        <div class="card">
+            <label for="sourceCourses">Your Course List (One per line)</label>
+            <textarea id="sourceCourses" placeholder="e.g.&#10;ENG 101 - Composition I&#10;MATH 150 Precalculus&#10;CS 200: Intro to Python"></textarea>
+        </div>
+        <div class="card">
+            <label for="talonCourses">Talon Course List / URLs (One per line)</label>
+            <textarea id="talonCourses" placeholder="e.g.&#10;2024FA-ENG-101-01 Composition I (https://talon.example.edu/d2l/home/12345)&#10;MATH 150-02 Precalculus - Fall 2024&#10;CS-200 Python Programming"></textarea>
+        </div>
+    </div>
 
-  <!-- Step 2: Select Talon Course -->
-  <div class="step">
-    <label for="talonCourseSelect">2. Select "Talon Course" to Match:</label>
-    <select id="talonCourseSelect" disabled>
-      <option value="">-- Upload CourseList.csv first --</option>
-    </select>
-  </div>
+    <button onclick="matchCourses()">Match Courses</button>
 
-  <!-- Step 3: Upload Course Roster.csv -->
-  <div class="step">
-    <label for="rosterInput">3. Upload Course Roster CSV File(s):</label>
-    <input type="file" id="rosterInput" accept=".csv" multiple>
-  </div>
-
-  <button id="processBtn" onclick="processRoster()">Process & Export to Excel</button>
-
-  <div id="status"></div>
+    <div class="results card" id="resultsCard" style="display: none;">
+        <h2>Matched Results</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Original Course</th>
+                    <th>Matched Talon Course</th>
+                    <th>Match Quality</th>
+                </tr>
+            </thead>
+            <tbody id="resultsTable"></tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-  // Required Target Headers for final export
-  const TARGET_HEADERS = [
-    "header", "customer_code", "api_code", "api_action", "loc_disname", 
-    "pers_type", "pers_disname", "eta_id", "fname", "lname", "mname", 
-    "uname", "chg_password", "chg_pin", "status", "pers_subtype_disname", 
-    "acnt_type_disname", "reg_term_disname", "curr_lvl1_disname", "curr_status", 
-    "first_sched_date", "team_disname", "cntrct_disname", "trng_cal_disr", 
-    "class_disname", "user_type_dis", "local_email", "site_disname"
-  ];
-
-  // Column Mappings for incoming Roster CSVs
-  const COLUMN_MAPPINGS = {
-    "first name": "fname",
-    "firstname": "fname",
-    "last name": "lname",
-    "lastname": "lname",
-    "middle name": "mname",
-    "middlename": "mname",
-    "a number": "uname",
-    "anumber": "uname",
-    "a-number": "uname",
-    "user id": "uname",
-    "username": "uname"
-  };
-
-  // Step 1 & 2: Extract "talon course" column from uploaded CourseList file
-  async function loadTalonCourses() {
-    const fileInput = document.getElementById('courseListInput');
-    const select = document.getElementById('talonCourseSelect');
-
-    if (!fileInput.files.length) return;
-
-    showStatus("Reading CourseList.csv...", "info");
-
-    try {
-      const file = fileInput.files[0];
-      const data = await file.arrayBuffer();
-      const workbook = XLSX.read(data, { type: 'array' });
-      const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      const json = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
-
-      if (json.length === 0) {
-        showStatus("Uploaded file appears to be empty.", "error");
-        return;
-      }
-
-      // Find the exact column header for "talon course" (case-insensitive)
-      const firstRow = json[0];
-      const talonKey = Object.keys(firstRow).find(
-        key => key.trim().toLowerCase() === "talon course"
-      );
-
-      if (!talonKey) {
-        showStatus("Could not find a 'talon course' column in CourseList.csv. Please verify header spelling.", "error");
-        select.disabled = true;
-        return;
-      }
-
-      // Extract unique non-empty talon course names
-      const talonCourses = Array.from(new Set(
-        json.map(row => String(row[talonKey]).trim()).filter(Boolean)
-      ));
-
-      // Build select options
-      select.innerHTML = '<option value="">-- Select a Talon Course --</option>';
-      talonCourses.forEach(course => {
-        const option = document.createElement('option');
-        option.value = course;
-        option.textContent = course;
-        select.appendChild(option);
-      });
-
-      select.disabled = false;
-      showStatus(`Loaded ${talonCourses.length} unique "talon course" options into the dropdown.`, "success");
-
-    } catch (err) {
-      console.error(err);
-      showStatus("Failed to read CourseList file: " + err.message, "error");
-    }
-  }
-
-  // Step 3: Parse roster files and assign selected Talon Course to class_disname
-  async function processRoster() {
-    const rosterInput = document.getElementById('rosterInput');
-    const select = document.getElementById('talonCourseSelect');
-    const selectedTalonCourse = select.value;
-
-    if (!select.disabled && !selectedTalonCourse) {
-      showStatus("Please select a Talon Course from the dropdown menu.", "error");
-      return;
+    // Utility to extract course codes (e.g., ENG 101, MATH-150, CS200)
+    function extractCode(str) {
+        const match = str.match(/([a-zA-Z]{2,4})\s*[-_]?\s*(\d{3})/i);
+        return match ? `${match[1].toUpperCase()}${match[2]}` : null;
     }
 
-    if (!rosterInput.files.length) {
-      showStatus("Please select at least one Course Roster CSV file.", "error");
-      return;
+    // Basic string similarity calculation (Dice's Coefficient)
+    function calculateSimilarity(str1, str2) {
+        const s1 = str1.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const s2 = str2.toLowerCase().replace(/[^a-z0-9]/g, '');
+        
+        if (s1 === s2) return 1.0;
+        if (s1.length < 2 || s2.length < 2) return 0.0;
+
+        const bigrams1 = new Set();
+        for (let i = 0; i < s1.length - 1; i++) bigrams1.add(s1.substring(i, i + 2));
+
+        let intersection = 0;
+        for (let i = 0; i < s2.length - 1; i++) {
+            const bigram = s2.substring(i, i + 2);
+            if (bigrams1.has(bigram)) intersection++;
+        }
+
+        return (2.0 * intersection) / ((s1.length - 1) + (s2.length - 1));
     }
 
-    showStatus("Processing roster file(s)...", "info");
+    function matchCourses() {
+        const sourceLines = document.getElementById('sourceCourses').value.split('\n').filter(l => l.trim());
+        const talonLines = document.getElementById('talonCourses').value.split('\n').filter(l => l.trim());
+        const tbody = document.getElementById('resultsTable');
+        
+        tbody.innerHTML = '';
 
-    try {
-      const rosterFiles = Array.from(rosterInput.files);
-      let outputRows = [];
+        sourceLines.forEach(source => {
+            const sourceCode = extractCode(source);
+            let bestMatch = null;
+            let highestScore = 0;
+            let matchType = 'none';
 
-      for (let file of rosterFiles) {
-        const text = await file.text();
-        const lines = parseCSVLines(text);
+            talonLines.forEach(talon => {
+                const talonCode = extractCode(talon);
+                let score = 0;
 
-        if (lines.length < 2) continue;
+                // Priority 1: Exact Course Code Match (e.g. CS101 matches CS101)
+                if (sourceCode && talonCode && sourceCode === talonCode) {
+                    score = 0.8 + (calculateSimilarity(source, talon) * 0.2); // Boost by title similarity
+                } else {
+                    // Priority 2: Overall String Similarity
+                    score = calculateSimilarity(source, talon);
+                }
 
-        const headers = lines[0].map(h => h.trim().toLowerCase());
-        const dataRows = lines.slice(1);
+                if (score > highestScore) {
+                    highestScore = score;
+                    bestMatch = talon;
+                }
+            });
 
-        // Map column indices
-        const indexMap = {};
-        headers.forEach((colName, idx) => {
-          const targetKey = COLUMN_MAPPINGS[colName];
-          if (targetKey) indexMap[targetKey] = idx;
+            // Set threshold badge
+            if (highestScore > 0.6) {
+                matchType = 'high';
+            } else if (highestScore > 0.3) {
+                matchType = 'medium';
+            } else {
+                matchType = 'none';
+                bestMatch = null;
+            }
+
+            // Append row to table
+            const tr = document.createElement('tr');
+            
+            let badgeHtml = '<span class="badge badge-none">No Match</span>';
+            if (matchType === 'high') badgeHtml = '<span class="badge badge-high">High Match</span>';
+            if (matchType === 'medium') badgeHtml = '<span class="badge badge-medium">Partial Match</span>';
+
+            tr.innerHTML = `
+                <td><strong>${escapeHtml(source)}</strong></td>
+                <td>${bestMatch ? escapeHtml(bestMatch) : '<span class="no-match">No reliable match found</span>'}</td>
+                <td>${badgeHtml}</td>
+            `;
+            tbody.appendChild(tr);
         });
 
-        for (let row of dataRows) {
-          let rowObj = {};
-          TARGET_HEADERS.forEach(h => rowObj[h] = ""); // default empty
-
-          // Populate mapped fields (fname, lname, mname, uname)
-          Object.keys(indexMap).forEach(targetHeader => {
-            const idx = indexMap[targetHeader];
-            if (idx !== undefined && row[idx] !== undefined) {
-              rowObj[targetHeader] = row[idx].trim();
-            }
-          });
-
-          // Set matched Talon Course to class_disname
-          rowObj["class_disname"] = selectedTalonCourse;
-
-          outputRows.push(rowObj);
-        }
-      }
-
-      // Generate Excel File
-      const worksheet = XLSX.utils.json_to_sheet(outputRows, { header: TARGET_HEADERS });
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Roster Export");
-
-      XLSX.writeFile(workbook, "Course_Roster_Talon_Export.xlsx");
-
-      showStatus(`Successfully processed ${rosterFiles.length} roster file(s) with ${outputRows.length} total rows.\nApplied Talon Course: "${selectedTalonCourse}"\nExported to Excel (.xlsx)!`, "success");
-
-    } catch (err) {
-      console.error(err);
-      showStatus("An error occurred during processing: " + err.message, "error");
-    }
-  }
-
-  function showStatus(text, type) {
-    const statusDiv = document.getElementById('status');
-    statusDiv.textContent = text;
-    statusDiv.className = type;
-  }
-
-  // Basic CSV parser handling quoted strings
-  function parseCSVLines(text) {
-    const lines = text.split(/\r\n|\n/);
-    const result = [];
-
-    for (let line of lines) {
-      if (!line.trim()) continue;
-      
-      let fields = [];
-      let insideQuotes = false;
-      let currentField = '';
-
-      for (let char of line) {
-        if (char === '"') {
-          insideQuotes = !insideQuotes;
-        } else if (char === ',' && !insideQuotes) {
-          fields.push(currentField.trim());
-          currentField = '';
-        } else {
-          currentField += char;
-        }
-      }
-      fields.push(currentField.trim());
-      result.push(fields);
+        document.getElementById('resultsCard').style.display = 'block';
     }
 
-    return result;
-  }
+    function escapeHtml(text) {
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
 </script>
 
 </body>
