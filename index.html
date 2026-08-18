@@ -56,12 +56,13 @@
         }
         textarea {
             width: 100%;
-            height: 120px;
+            height: 140px;
             font-family: monospace;
             padding: 10px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
+            resize: vertical;
         }
         .btn {
             background-color: #003262;
@@ -83,8 +84,21 @@
         .btn-success:hover {
             background-color: #218838;
         }
-        .file-input-group {
+        .form-group {
             margin-bottom: 15px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        select, input[type="file"] {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        select {
+            min-width: 200px;
         }
         .output-table {
             margin-top: 15px;
@@ -450,7 +464,7 @@
 
                         <!-- CFI Certification 3740 -->
                         <tr data-code="3740">
-                            <td class="course-name">CFI Certification 3740 (Sec 1)</td>
+                            <td class="course-name">Flight Instructor Certification 3740 (Sec 1)</td>
                             <td><input type="radio" name="b_3740_1" value="AV25XX Time Bldg"></td>
                             <td><input type="radio" name="b_3740_1" value="FW ACCLRATD COMM"></td>
                             <td><input type="radio" name="b_3740_1" value="FW AD MAN v2"></td>
@@ -466,92 +480,24 @@
                             <td><input type="radio" name="b_3740_1" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_3740_1" value="USU INSTRMNT V3"></td>
                         </tr>
-                        <tr data-code="3740">
-                            <td class="course-name">CFI Certification 3740 (Sec 2)</td>
-                            <td><input type="radio" name="b_3740_2" value="AV25XX Time Bldg"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW ACCLRATD COMM"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW AD MAN v2"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW CFI v3 BC"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW CFI v3.2" checked></td>
-                            <td><input type="radio" name="b_3740_2" value="FW CFI v3.2 BC"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW COM SE v2"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW CXC v2"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW INSTRMNT"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW USU Private2"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW USU PVT2 FP"></td>
-                            <td><input type="radio" name="b_3740_2" value="FW XC v2"></td>
-                            <td><input type="radio" name="b_3740_2" value="USU COMMERCIAL"></td>
-                            <td><input type="radio" name="b_3740_2" value="USU INSTRMNT V3"></td>
-                        </tr>
-                        <tr data-code="3740">
-                            <td class="course-name">CFI Certification 3740 (Sec 3)</td>
-                            <td><input type="radio" name="b_3740_3" value="AV25XX Time Bldg"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW ACCLRATD COMM"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW AD MAN v2"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW CFI v3 BC"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW CFI v3.2" checked></td>
-                            <td><input type="radio" name="b_3740_3" value="FW CFI v3.2 BC"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW COM SE v2"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW CXC v2"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW INSTRMNT"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW USU Private2"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW USU PVT2 FP"></td>
-                            <td><input type="radio" name="b_3740_3" value="FW XC v2"></td>
-                            <td><input type="radio" name="b_3740_3" value="USU COMMERCIAL"></td>
-                            <td><input type="radio" name="b_3740_3" value="USU INSTRMNT V3"></td>
-                        </tr>
 
-                        <!-- Commercial Multi-Engine Add-On 3880 -->
-                        <tr data-code="3880">
-                            <td class="course-name">Commercial Multi-Engine Add-On 3880 (Sec 1)</td>
-                            <td><input type="radio" name="b_3880_1" value="AV25XX Time Bldg"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW ACCLRATD COMM"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW AD MAN v2"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW CFI v3 BC"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW CFI v3.2"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW CFI v3.2 BC"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW COM SE v2"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW CXC v2"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW INSTRMNT"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW USU Private2"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW USU PVT2 FP"></td>
-                            <td><input type="radio" name="b_3880_1" value="FW XC v2"></td>
-                            <td><input type="radio" name="b_3880_1" value="USU COMMERCIAL"></td>
-                            <td><input type="radio" name="b_3880_1" value="USU INSTRMNT V3"></td>
-                        </tr>
-                        <tr data-code="3880">
-                            <td class="course-name">Commercial Multi-Engine Add-On 3880 (Sec 2)</td>
-                            <td><input type="radio" name="b_3880_2" value="AV25XX Time Bldg"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW ACCLRATD COMM"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW AD MAN v2"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW CFI v3 BC"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW CFI v3.2"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW CFI v3.2 BC"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW COM SE v2"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW CXC v2"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW INSTRMNT"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW USU Private2"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW USU PVT2 FP"></td>
-                            <td><input type="radio" name="b_3880_2" value="FW XC v2"></td>
-                            <td><input type="radio" name="b_3880_2" value="USU COMMERCIAL"></td>
-                            <td><input type="radio" name="b_3880_2" value="USU INSTRMNT V3"></td>
-                        </tr>
-                        <tr data-code="3880">
-                            <td class="course-name">Commercial Multi-Engine Add-On 3880 (Sec 3)</td>
-                            <td><input type="radio" name="b_3880_3" value="AV25XX Time Bldg"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW ACCLRATD COMM"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW AD MAN v2"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW CFI v3 BC"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW CFI v3.2"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW CFI v3.2 BC"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW COM SE v2"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW CXC v2"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW INSTRMNT"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW USU Private2"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW USU PVT2 FP"></td>
-                            <td><input type="radio" name="b_3880_3" value="FW XC v2"></td>
-                            <td><input type="radio" name="b_3880_3" value="USU COMMERCIAL"></td>
-                            <td><input type="radio" name="b_3880_3" value="USU INSTRMNT V3"></td>
+                        <!-- CFII Certification 3750 -->
+                        <tr data-code="3750">
+                            <td class="course-name">Instrument Flight Instructor 3750 (Sec 1)</td>
+                            <td><input type="radio" name="b_3750_1" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_3750_1" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_3750_1" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_3750_1" value="USU INSTRMNT V3" checked></td>
                         </tr>
                     </tbody>
                 </table>
@@ -559,172 +505,175 @@
         </form>
     </div>
 
-    <!-- SECTION 2: ROSTER CONVERTER -->
+    <!-- SECTION 2: FILE INPUT & CONVERSION -->
     <div class="card">
-        <h2>2. Load & Convert Course Roster</h2>
+        <h2>2. Import Banner CSV Roster</h2>
         
-        <div class="file-input-group">
-            <label for="fileInput"><strong>Upload Roster File (CourseRoster.csv):</strong></label><br>
-            <input type="file" id="fileInput" accept=".csv, .txt">
+        <!-- Target Location Selector -->
+        <div class="form-group">
+            <label for="locationSelect">Target Location / Campus:</label>
+            <select id="locationSelect">
+                <option value="Logan (KLGU)">Logan (KLGU)</option>
+                <option value="Price (KPUC)">Price (KPUC)</option>
+                <option value="Brigham City (KBMC)">Brigham City (KBMC)</option>
+            </select>
         </div>
 
-        <div>
-            <label for="rosterInput"><strong>Or Paste Raw CSV Roster Content Here:</strong></label><br>
-            <textarea id="rosterInput" placeholder="Term,CRN,Subject,Course,Section,A Number,Last Name,First Name..."></textarea>
+        <div class="form-group">
+            <label for="csvFileInput">Upload Roster File:</label>
+            <input type="file" id="csvFileInput" accept=".csv">
         </div>
 
-        <button class="btn" onclick="convertRoster()">Convert Roster to Talon</button>
-        <button class="btn btn-success" id="downloadBtn" style="display:none;" onclick="downloadCSV()">Download Cleaned Talon Roster CSV</button>
+        <div class="form-group">
+            <label for="rawCsvText">Or paste CSV content directly:</label>
+            <textarea id="rawCsvText" placeholder="Paste Banner CSV contents here (e.g., Course, Section, Student ID, First Name, Last Name)..."></textarea>
+        </div>
 
-        <div class="output-table" id="outputArea"></div>
+        <button class="btn" id="btnProcess">Process Roster</button>
+    </div>
+
+    <!-- SECTION 3: OUTPUT RESULTS -->
+    <div class="card" id="outputCard" style="display:none;">
+        <h2>3. Talon Formatted Output</h2>
+        <div class="table-container output-table">
+            <table id="resultTable">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Student ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Banner Course</th>
+                        <th>Mapped Talon Course</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="resultBody">
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-success" id="btnDownload">Download Talon CSV</button>
     </div>
 
     <script>
-        let cleanedRows = [];
-        const cleanHeaders = ['A Number', 'Last Name', 'First Name', 'Banner Course', 'Email', 'Talon Course'];
-
-        function parseCSVLine(text) {
-            let result = [];
-            let cur = '';
-            let inQuotes = false;
-            for (let i = 0; i < text.length; i++) {
-                let c = text[i];
-                if (c === '"') {
-                    if (inQuotes && text[i+1] === '"') {
-                        cur += '"';
-                        i++;
-                    } else {
-                        inQuotes = !inQuotes;
-                    }
-                } else if (c === ',' && !inQuotes) {
-                    result.push(cur.trim());
-                    cur = '';
-                } else {
-                    cur += c;
-                }
-            }
-            result.push(cur.trim());
-            return result;
-        }
-
-        function getMappings() {
-            const codeMap = {};
-            const rows = document.querySelectorAll("#mappingForm tbody tr");
-            
-            rows.forEach(row => {
-                const code = row.getAttribute('data-code');
-                const checked = row.querySelector('input[type="radio"]:checked');
-                const talonCourse = checked ? checked.value : "UNMAPPED";
-                if (code) codeMap[code] = talonCourse;
-            });
-            return codeMap;
-        }
-
-        document.getElementById('fileInput').addEventListener('change', function(e) {
+        // Load file content into textarea if uploaded
+        document.getElementById('csvFileInput').addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(evt) {
-                document.getElementById('rosterInput').value = evt.target.result;
+            reader.onload = function (evt) {
+                document.getElementById('rawCsvText').value = evt.target.result;
             };
             reader.readAsText(file);
         });
 
-        function convertRoster() {
-            const codeMap = getMappings();
-            const inputTxt = document.getElementById('rosterInput').value.trim();
-            
-            if (!inputTxt) {
-                alert("Please upload CourseRoster.csv or paste CSV content first.");
+        // Convert CSV Text into Structured Data
+        function parseCSV(text) {
+            const lines = text.trim().split(/\r\n|\n/);
+            if (lines.length < 2) return [];
+
+            const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
+            const data = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const row = lines[i].split(',').map(cell => cell.trim().replace(/^["']|["']$/g, ''));
+                const obj = {};
+                headers.forEach((h, index) => {
+                    obj[h] = row[index] || '';
+                });
+                data.push(obj);
+            }
+            return data;
+        }
+
+        // Get Current Mapping Choices from Form Radios
+        function getMappingRules() {
+            const form = document.getElementById('mappingForm');
+            const formData = new FormData(form);
+            const mapping = {};
+            for (let [key, value] of formData.entries()) {
+                mapping[key] = value;
+            }
+            return mapping;
+        }
+
+        // Process Roster Click
+        document.getElementById('btnProcess').addEventListener('click', function () {
+            const rawText = document.getElementById('rawCsvText').value;
+            const selectedLocation = document.getElementById('locationSelect').value;
+
+            if (!rawText.trim()) {
+                alert('Please upload a file or paste CSV content first.');
                 return;
             }
 
-            const rawLines = inputTxt.split(/\r?\n/).filter(line => line.trim().length > 0);
-            if (rawLines.length === 0) return;
+            const rows = parseCSV(rawText);
+            const mappings = getMappingRules();
+            const resultBody = document.getElementById('resultBody');
+            resultBody.innerHTML = '';
 
-            const headerRow = parseCSVLine(rawLines[0]);
-            
-            let colANumber = headerRow.findIndex(h => h.toLowerCase().includes('a number') || h.toLowerCase() === 'id');
-            let colLastName = headerRow.findIndex(h => h.toLowerCase().includes('last name'));
-            let colFirstName = headerRow.findIndex(h => h.toLowerCase().includes('first name'));
-            let colSubject = headerRow.findIndex(h => h.toLowerCase().includes('subject'));
-            let colCourse = headerRow.findIndex(h => h.toLowerCase().includes('course'));
-            let colEmail = headerRow.findIndex(h => h.toLowerCase().includes('email'));
+            window.processedTalonData = [];
 
-            let hasHeader = (colANumber !== -1 || colCourse !== -1);
-            let startIndex = hasHeader ? 1 : 0;
+            rows.forEach(row => {
+                // Flexible field matching for standard Banner exports
+                const studentId = row['student id'] || row['id'] || row['a-number'] || row['anumber'] || 'N/A';
+                const firstName = row['first name'] || row['firstname'] || row['first'] || '';
+                const lastName = row['last name'] || row['lastname'] || row['last'] || '';
+                const courseCode = row['course'] || row['course number'] || row['code'] || '';
+                const section = row['section'] || row['sec'] || '1';
 
-            cleanedRows = [];
-            let tableHtml = `<h3>Cleaned Talon Roster (${rawLines.length - startIndex} Students)</h3>`;
-            tableHtml += `<table><thead><tr>
-                <th>A Number</th>
-                <th>Last Name</th>
-                <th>First Name</th>
-                <th>Banner Course</th>
-                <th>Email</th>
-                <th>Mapped Talon Course</th>
-            </tr></thead><tbody>`;
+                const mapKey = `b_${courseCode}_${section}`;
+                const talonCourse = mappings[mapKey] || 'Unmapped';
+                const isMapped = talonCourse !== 'Unmapped';
 
-            for (let i = startIndex; i < rawLines.length; i++) {
-                const cols = parseCSVLine(rawLines[i]);
-                if (cols.length === 0) continue;
+                // Display Row in Result Table
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${selectedLocation}</td>
+                    <td>${studentId}</td>
+                    <td>${firstName}</td>
+                    <td>${lastName}</td>
+                    <td>${courseCode} (Sec ${section})</td>
+                    <td><strong>${talonCourse}</strong></td>
+                    <td>${isMapped ? '<span class="badge">Mapped</span>' : '<span class="badge badge-unmapped">Unmapped</span>'}</td>
+                `;
+                resultBody.appendChild(tr);
 
-                let aNum = colANumber !== -1 ? cols[colANumber] : (cols[0] || '');
-                let lastName = colLastName !== -1 ? cols[colLastName] : (cols[1] || '');
-                let firstName = colFirstName !== -1 ? cols[colFirstName] : (cols[2] || '');
-                let subject = colSubject !== -1 ? cols[colSubject] : '';
-                let courseVal = colCourse !== -1 ? cols[colCourse] : (cols[3] || '');
-                let email = colEmail !== -1 ? cols[colEmail] : '';
-
-                let displayCourse = subject ? `${subject} ${courseVal}` : courseVal;
-
-                let talonMatch = "UNMAPPED";
-                let matched = false;
-                
-                for (let code in codeMap) {
-                    if (courseVal.toString().trim() === code || displayCourse.includes(code)) {
-                        talonMatch = codeMap[code];
-                        matched = true;
-                        break;
-                    }
+                if (isMapped) {
+                    window.processedTalonData.push({
+                        "Location": selectedLocation,
+                        "Student ID": studentId,
+                        "First Name": firstName,
+                        "Last Name": lastName,
+                        "Talon Course": talonCourse
+                    });
                 }
-
-                cleanedRows.push([aNum, lastName, firstName, displayCourse, email, talonMatch]);
-
-                let badgeClass = matched ? 'badge' : 'badge badge-unmapped';
-
-                tableHtml += `<tr>
-                    <td>${aNum}</td>
-                    <td style="text-align:left;">${lastName}</td>
-                    <td style="text-align:left;">${firstName}</td>
-                    <td>${displayCourse}</td>
-                    <td style="text-align:left;">${email}</td>
-                    <td><span class="${badgeClass}">${talonMatch}</span></td>
-                </tr>`;
-            }
-
-            tableHtml += `</tbody></table>`;
-            document.getElementById('outputArea').innerHTML = tableHtml;
-            document.getElementById('downloadBtn').style.display = 'inline-block';
-        }
-
-        function downloadCSV() {
-            if (cleanedRows.length === 0) return;
-
-            let csvStr = cleanHeaders.map(h => `"${h}"`).join(',') + '\n';
-            cleanedRows.forEach(row => {
-                csvStr += row.map(val => `"${(val || '').replace(/"/g, '""')}"`).join(',') + '\n';
             });
 
-            const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "Talon_Course_Roster_Cleaned.csv");
+            document.getElementById('outputCard').style.display = 'block';
+        });
+
+        // Export Mapped Talon CSV File
+        document.getElementById('btnDownload').addEventListener('click', function () {
+            if (!window.processedTalonData || window.processedTalonData.length === 0) {
+                alert('No mapped entries available to export.');
+                return;
+            }
+
+            let csvContent = 'data:text/csv;charset=utf-8,Location,Student ID,First Name,Last Name,Talon Course\n';
+            window.processedTalonData.forEach(item => {
+                csvContent += `"${item['Location']}","${item['Student ID']}","${item['First Name']}","${item['Last Name']}","${item['Talon Course']}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', 'Talon_Roster_Import.csv');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-        }
+        });
     </script>
 </body>
 </html>
