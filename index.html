@@ -317,12 +317,12 @@
 
         <div class="form-group">
             <label for="csvFileInput">Upload Roster File:</label>
-            <input type="file" id="csvFileInput" accept=".csv">
+            <input type="file" id="csvFileInput" accept=".csv,.txt">
         </div>
 
         <div class="form-group">
-            <label for="rawCsvText">Or paste CSV content directly:</label>
-            <textarea id="rawCsvText" placeholder="Paste Banner CSV contents here (e.g., Course, Student ID, First Name, Last Name, Email)..."></textarea>
+            <label for="rawCsvText">Or paste roster content directly:</label>
+            <textarea id="rawCsvText" placeholder="Paste Banner roster contents here (e.g., Course, Student ID, First Name, Last Name, Email)..."></textarea>
         </div>
 
         <button class="btn" id="btnProcess">Process Roster</button>
@@ -348,7 +348,7 @@
                 </tbody>
             </table>
         </div>
-        <button class="btn btn-success" id="btnDownload">Download Talon CSV</button>
+        <button class="btn btn-success" id="btnDownload">Download Talon Semicolon File</button>
     </div>
 
     <script>
@@ -363,17 +363,23 @@
             reader.readAsText(file);
         });
 
-        // Convert CSV Text into Structured Data
+        // Convert CSV/TSV Text into Structured Data
         function parseCSV(text) {
             const lines = text.trim().split(/\r\n|\n/);
             if (lines.length < 2) return [];
 
-            const headers = lines[0].split(',').map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
+            // Detect delimiter (comma, tab, or semicolon)
+            const firstLine = lines[0];
+            let delimiter = ',';
+            if (firstLine.includes('\t')) delimiter = '\t';
+            else if (firstLine.includes(';') && !firstLine.includes(',')) delimiter = ';';
+
+            const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
             const data = [];
 
             for (let i = 1; i < lines.length; i++) {
                 if (!lines[i].trim()) continue;
-                const row = lines[i].split(',').map(cell => cell.trim().replace(/^["']|["']$/g, ''));
+                const row = lines[i].split(delimiter).map(cell => cell.trim().replace(/^["']|["']$/g, ''));
                 const obj = {};
                 headers.forEach((h, index) => {
                     obj[h] = row[index] || '';
@@ -400,7 +406,7 @@
             const selectedLocation = document.getElementById('locationSelect').value;
 
             if (!rawText.trim()) {
-                alert('Please upload a file or paste CSV content first.');
+                alert('Please upload a file or paste content first.');
                 return;
             }
 
@@ -479,7 +485,7 @@
             document.getElementById('outputCard').style.display = 'block';
         });
 
-        // Export Mapped Talon CSV File
+        // Export Mapped Semicolon-Separated Talon File
         document.getElementById('btnDownload').addEventListener('click', function () {
             if (!window.processedTalonData || window.processedTalonData.length === 0) {
                 alert('No mapped entries available to export.');
@@ -495,11 +501,13 @@
                 "class_disname", "user_type_disname", "local_email", "site_disname"
             ];
 
-            let csvContent = 'data:text/csv;charset=utf-8,' + headers.join(',') + '\n';
+            // Join headers with semicolons
+            let csvContent = 'data:text/csv;charset=utf-8,' + headers.join(';') + '\n';
 
             window.processedTalonData.forEach(item => {
+                // Join fields with semicolons
                 const row = headers.map(h => `"${(item[h] || '').toString().replace(/"/g, '""')}"`);
-                csvContent += row.join(',') + '\n';
+                csvContent += row.join(';') + '\n';
             });
 
             const encodedUri = encodeURI(csvContent);
