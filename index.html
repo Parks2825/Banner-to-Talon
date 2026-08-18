@@ -47,14 +47,15 @@
       margin-top: 15px;
       font-size: 14px;
       color: #555;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>CSV Merger & Converter</h2>
-  <p>Select CSV files to convert comma-separated values into a single semicolon-separated <code>.txt</code> file with custom headers.</p>
+  <h2>CSV Merger & Column Mapper</h2>
+  <p>Select CSV files to map columns into the semicolon-separated <code>.txt</code> output structure.</p>
   
   <div class="field">
     <label for="csvInputs">Select CSV Files:</label>
@@ -68,8 +69,23 @@
 </div>
 
 <script>
-  // Defined custom header string
-  const CUSTOM_HEADER = "header;customer_code;api_code;api_action;loc_disname;pers_type;pers_disname;eta_id;fname;lname;uname;chg_password;chg_pin;status;pers_subtype_disname;acnt_type_disname;reg_term_disname;curr_lvl1_disname;curr_status;first_sched_date;team_disname;cntrct_disname;trng_cal_disr;class_disname;user_type_dis;local_email;site_disname";
+  // Complete list of target headers (including mname)
+  const TARGET_HEADERS = [
+    "header", "customer_code", "api_code", "api_action", "loc_disname", 
+    "pers_type", "pers_disname", "eta_id", "fname", "lname", "mname", 
+    "uname", "chg_password", "chg_pin", "status", "pers_subtype_disname", 
+    "acnt_type_disname", "reg_term_disname", "curr_lvl1_disname", "curr_status", 
+    "first_sched_date", "team_disname", "cntrct_disname", "trng_cal_disr", 
+    "class_disname", "user_type_dis", "local_email", "site_disname"
+  ];
+
+  // Column mapping definition: CSV Header (lowercase) -> Target Header Index
+  const COLUMN_MAPPINGS = {
+    "first name": "fname",
+    "last name": "lname",
+    "middle name": "mname",
+    "a number": "uname"
+  };
 
   async function processFiles() {
     const fileInput = document.getElementById('csvInputs');
@@ -85,40 +101,60 @@
     downloadLink.style.display = "none";
 
     const files = Array.from(fileInput.files);
-    let combinedRows = [];
+    let mappedDataRows = [];
 
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       const text = await file.text();
       const lines = parseCSVLines(text);
 
-      if (lines.length === 0) continue;
+      if (lines.length < 2) continue; // Skip empty files or files without data
 
-      // Skip the first row (original CSV header) for all files
+      // Extract header row and clean column names
+      const csvHeaders = lines[0].map(h => h.trim().toLowerCase());
       const dataRows = lines.slice(1);
-      combinedRows.push(...dataRows);
+
+      // Create index map for this specific file: targetHeader -> csvColumnIndex
+      const indexMap = {};
+      csvHeaders.forEach((colName, csvIdx) => {
+        const targetHeaderKey = COLUMN_MAPPINGS[colName];
+        if (targetHeaderKey) {
+          indexMap[targetHeaderKey] = csvIdx;
+        }
+      });
+
+      // Map each data row into the standard TARGET_HEADERS structure
+      for (let row of dataRows) {
+        let mappedRow = TARGET_HEADERS.map(header => {
+          const csvColIndex = indexMap[header];
+          return (csvColIndex !== undefined && row[csvColIndex] !== undefined) 
+            ? row[csvColIndex] 
+            : ""; // Output empty string if column is unmapped or missing
+        });
+        mappedDataRows.push(mappedRow);
+      }
     }
 
-    // Convert comma-separated data rows to semicolon-separated strings
-    const formattedData = combinedRows
+    // Convert rows to semicolon-separated string
+    const headerLine = TARGET_HEADERS.join(';');
+    const formattedData = mappedDataRows
       .map(row => row.join(';'))
       .join('\n');
 
-    // Combine custom header with data
-    const outputContent = CUSTOM_HEADER + '\n' + formattedData;
+    const outputContent = headerLine + '\n' + formattedData;
 
-    // Create a Blob download link
+    // Create Blob download link
     const blob = new Blob([outputContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     
     downloadLink.href = url;
-    downloadLink.download = 'combined_output.txt';
+    downloadLink.download = 'mapped_output.txt';
     downloadLink.style.display = 'inline-block';
     
-    statusDiv.textContent = `Successfully processed ${files.length} file(s). Click download to save.`;
+    statusDiv.textContent = `Successfully processed ${files.length} file(s) and mapped columns! Click download to save.`;
   }
 
-  // Simple CSV parser handling quotes and commas
+  // Robust CSV parser handling quoted strings and commas
   function parseCSVLines(text) {
     const lines = text.split(/\r\n|\n/);
     const result = [];
