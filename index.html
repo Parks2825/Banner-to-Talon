@@ -1,1 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV to Semicolon TXT Converter</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 0 20px;
+      color: #333;
+    }
+    .container {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .field {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    input[type="file"] {
+      display: block;
+      width: 100%;
+    }
+    button {
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #aaa;
+      cursor: not-allowed;
+    }
+    #status {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
 
+<div class="container">
+  <h2>CSV Merger & Converter</h2>
+  <p>Select CSV files to convert comma-separated values into a single semicolon-separated <code>.txt</code> file.</p>
+  
+  <div class="field">
+    <label for="csvInputs">Select CSV Files:</label>
+    <input type="file" id="csvInputs" accept=".csv" multiple>
+  </div>
+
+  <button id="convertBtn" onclick="processFiles()">Convert and Combine</button>
+  <a id="downloadLink" style="display: none;"><button style="background-color: #28a745; margin-left: 10px;">Download TXT</button></a>
+
+  <div id="status"></div>
+</div>
+
+<script>
+  async function processFiles() {
+    const fileInput = document.getElementById('csvInputs');
+    const statusDiv = document.getElementById('status');
+    const downloadLink = document.getElementById('downloadLink');
+
+    if (!fileInput.files.length) {
+      statusDiv.textContent = "Please select at least one CSV file.";
+      return;
+    }
+
+    statusDiv.textContent = "Processing files...";
+    downloadLink.style.display = "none";
+
+    const files = Array.from(fileInput.files);
+    let combinedRows = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const text = await file.text();
+      const lines = parseCSVLines(text);
+
+      if (lines.length === 0) continue;
+
+      if (i === 0) {
+        // Keep header and data from the first file
+        combinedRows.push(...lines);
+      } else {
+        // Skip header for subsequent files
+        combinedRows.push(...lines.slice(1));
+      }
+    }
+
+    // Convert comma-separated array items to semicolon-separated string
+    const outputContent = combinedRows
+      .map(row => row.join(';'))
+      .join('\n');
+
+    // Create a Blob download link
+    const blob = new Blob([outputContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    downloadLink.href = url;
+    downloadLink.download = 'combined_output.txt';
+    downloadLink.style.display = 'inline-block';
+    
+    statusDiv.textContent = `Successfully processed ${files.length} file(s). Click download to save.`;
+  }
+
+  // Simple CSV parser handling standard lines and quotes
+  function parseCSVLines(text) {
+    const lines = text.split(/\r\n|\n/);
+    const result = [];
+
+    for (let line of lines) {
+      if (!line.trim()) continue;
+      
+      // Basic split handling double quotes around standard fields
+      let fields = [];
+      let insideQuotes = false;
+      let currentField = '';
+
+      for (let char of line) {
+        if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === ',' && !insideQuotes) {
+          fields.push(currentField.trim());
+          currentField = '';
+        } else {
+          currentField += char;
+        }
+      }
+      fields.push(currentField.trim());
+      result.push(fields);
+    }
+
+    return result;
+  }
+</script>
+
+</body>
+</html>
