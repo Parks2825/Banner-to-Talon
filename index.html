@@ -413,14 +413,16 @@
             rows.forEach((row, index) => {
                 // Flexible field matching across various Banner CSV headers
                 const studentId = row['student id'] || row['id'] || row['a-number'] || row['anumber'] || row['student_id'] || 'N/A';
-                const firstName = row['first name'] || row['firstname'] || row['first'] || row['fname'] || '';
-                const middleName = row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '';
-                const lastName = row['last name'] || row['lastname'] || row['last'] || row['lname'] || '';
-                const email = row['email'] || row['local_email'] || row['mail'] || row['email_address'] || '';
-                const username = row['uname'] || row['username'] || row['user_id'] || studentId;
+                const firstName = (row['first name'] || row['firstname'] || row['first'] || row['fname'] || '').toUpperCase();
+                const lastName = (row['last name'] || row['lastname'] || row['last'] || row['lname'] || '').toUpperCase();
+                const username = (row['uname'] || row['username'] || row['user_id'] || lastName).toUpperCase();
                 
                 const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
                 const courseName = rawCourse.trim();
+
+                // Build "Last Name, First Initial." format for pers_disname
+                const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
+                const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
 
                 // Lookup direct match or normalized fuzzy match
                 let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
@@ -457,38 +459,35 @@
 
                 if (isMapped) {
                     const isLogan = selectedLocation.includes("Logan");
-                    const persSubtype = isLogan ? "Fixed Wing - Logan" : "Fixed Wing - Eastern";
-                    const siteDisname = isLogan ? "USU Logan" : (selectedLocation.includes("Price") ? "USU Price" : "USU Brigham City");
+                    const locDisname = isLogan ? "lgu" : (selectedLocation.includes("Price") ? "puc" : "bmc");
 
                     window.processedTalonData.push({
                         "header": "data",
-                        "customer_code": "usu",
+                        "customer_code": "talon",
                         "api_code": "person",
                         "api_action": "add",
-                        "loc_disname": "USU NEW",
+                        "loc_disname": locDisname,
                         "pers_type": "student",
-                        "pers_disname": `${lastName}, ${firstName}`,
+                        "pers_disname": persDisname,
                         "eta_id": studentId,
                         "fname": firstName,
-                        "mname": middleName,
                         "lname": lastName,
-                        "uname": username,
-                        "chg_password": "yes",
-                        "chg_pin": "yes",
-                        "status": "active",
-                        "pers_subtype_disname": persSubtype,
+                        "curr_lvl1_disname": talonCourse,
+                        "first_sched_date": " 24 jan 2006",
+                        "team_disname": "Tiger",
+                        "curr_status": "active",
+                        "pers_subtype_disname": "<default>",
                         "acnt_type_disname": "<default>",
                         "reg_term_disname": "<default>",
-                        "curr_lvl1_disname": talonCourse,
-                        "curr_status": "active",
-                        "first_sched_date": "8-Aug-26",
-                        "team_disname": "Fixed Wing",
+                        "flt_blk_disname": "<default>",
                         "cntrct_disname": "<default>",
-                        "trng_cal_disname": "CTF",
-                        "class_disname": "<default>",
-                        "user_type_disname": "Student",
-                        "local_email": email,
-                        "site_disname": siteDisname
+                        "trng_cal_disname": "<default>",
+                        "reg_ref": "Spring 2006",
+                        "class_disname": "Class 2008",
+                        "uname": username,
+                        "password": "1234",
+                        "pin": "1234",
+                        "user_type_disname": "student"
                     });
                 }
             });
@@ -503,31 +502,34 @@
                 return;
             }
 
+            // Exact 27 Headers matching the Talon spec example
             const headers = [
                 "header", "customer_code", "api_code", "api_action", "loc_disname", 
-                "pers_type", "pers_disname", "eta_id", "fname", "mname", "lname", 
-                "uname", "chg_password", "chg_pin", "status", "pers_subtype_disname", 
-                "acnt_type_disname", "reg_term_disname", "curr_lvl1_disname", "curr_status", 
-                "first_sched_date", "team_disname", "cntrct_disname", "trng_cal_disname", 
-                "class_disname", "user_type_disname", "local_email", "site_disname"
+                "pers_type", "pers_disname", "eta_id", "fname", "lname", 
+                "curr_lvl1_disname", "first_sched_date", "team_disname", "curr_status", 
+                "pers_subtype_disname", "acnt_type_disname", "reg_term_disname", 
+                "flt_blk_disname", "cntrct_disname", "trng_cal_disname", "reg_ref", 
+                "class_disname", "uname", "password", "pin", "user_type_disname", ""
             ];
 
-            // Join headers with semicolons
-            let csvContent = 'data:text/csv;charset=utf-8,' + headers.join(';') + '\n';
+            // Construct header string ending with a semicolon
+            let fileContent = headers.slice(0, -1).join(';') + ';\n';
 
+            // Construct data rows unquoted, matching the example format
             window.processedTalonData.forEach(item => {
-                // Join fields with semicolons
-                const row = headers.map(h => `"${(item[h] || '').toString().replace(/"/g, '""')}"`);
-                csvContent += row.join(';') + '\n';
+                const row = headers.slice(0, -1).map(h => item[h] || '');
+                fileContent += row.join(';') + ';\n';
             });
 
-            const encodedUri = encodeURI(csvContent);
+            const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.setAttribute('href', encodedUri);
-            link.setAttribute('download', 'Talon_Roster_Import.csv');
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'Talon_Roster_Import.txt');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         });
     </script>
 </body>
