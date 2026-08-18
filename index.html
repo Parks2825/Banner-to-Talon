@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      max-width: 600px;
+      max-width: 650px;
       margin: 40px auto;
       padding: 0 20px;
       color: #333;
@@ -54,7 +54,7 @@
 
 <div class="container">
   <h2>CSV Merger & Converter</h2>
-  <p>Select CSV files to convert comma-separated values into a single semicolon-separated <code>.txt</code> file.</p>
+  <p>Select CSV files to convert comma-separated values into a single semicolon-separated <code>.txt</code> file with custom headers.</p>
   
   <div class="field">
     <label for="csvInputs">Select CSV Files:</label>
@@ -68,6 +68,9 @@
 </div>
 
 <script>
+  // Defined custom header string
+  const CUSTOM_HEADER = "header;customer_code;api_code;api_action;loc_disname;pers_type;pers_disname;eta_id;fname;lname;uname;chg_password;chg_pin;status;pers_subtype_disname;acnt_type_disname;reg_term_disname;curr_lvl1_disname;curr_status;first_sched_date;team_disname;cntrct_disname;trng_cal_disr;class_disname;user_type_dis;local_email;site_disname";
+
   async function processFiles() {
     const fileInput = document.getElementById('csvInputs');
     const statusDiv = document.getElementById('status');
@@ -91,19 +94,18 @@
 
       if (lines.length === 0) continue;
 
-      if (i === 0) {
-        // Keep header and data from the first file
-        combinedRows.push(...lines);
-      } else {
-        // Skip header for subsequent files
-        combinedRows.push(...lines.slice(1));
-      }
+      // Skip the first row (original CSV header) for all files
+      const dataRows = lines.slice(1);
+      combinedRows.push(...dataRows);
     }
 
-    // Convert comma-separated array items to semicolon-separated string
-    const outputContent = combinedRows
+    // Convert comma-separated data rows to semicolon-separated strings
+    const formattedData = combinedRows
       .map(row => row.join(';'))
       .join('\n');
+
+    // Combine custom header with data
+    const outputContent = CUSTOM_HEADER + '\n' + formattedData;
 
     // Create a Blob download link
     const blob = new Blob([outputContent], { type: 'text/plain;charset=utf-8' });
@@ -116,7 +118,7 @@
     statusDiv.textContent = `Successfully processed ${files.length} file(s). Click download to save.`;
   }
 
-  // Simple CSV parser handling standard lines and quotes
+  // Simple CSV parser handling quotes and commas
   function parseCSVLines(text) {
     const lines = text.split(/\r\n|\n/);
     const result = [];
@@ -124,7 +126,6 @@
     for (let line of lines) {
       if (!line.trim()) continue;
       
-      // Basic split handling double quotes around standard fields
       let fields = [];
       let insideQuotes = false;
       let currentField = '';
