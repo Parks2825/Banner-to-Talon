@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>USU Aviation - Banner to Talon Roster Converter</title>
+    <title>Banner to Talon Roster Converter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -106,7 +106,7 @@
     <!-- SECTION 1: MAPPING RULES -->
     <div class="card">
         <h2>1. Banner to Talon Course Mapping Rules</h2>
-        <p>Select the corresponding Talon Course for each USU Banner Course:</p>
+        <p>Select the corresponding Talon Course for each Banner Course:</p>
         <form id="mappingForm">
             <div class="table-container">
                 <table>
@@ -283,20 +283,20 @@
 
         <div>
             <label for="rosterInput"><strong>Or Paste Raw CSV Roster Content Here:</strong></label><br>
-            <textarea id="rosterInput" placeholder="Term,CRN,Subject,Course,Section,A Number,Last Name,First Name,Email..."></textarea>
+            <textarea id="rosterInput" placeholder="Term,CRN,Subject,Course,Section,A Number,Last Name,First Name..."></textarea>
         </div>
 
         <button class="btn" onclick="convertRoster()">Convert Roster to Talon</button>
-        <button class="btn btn-success" id="downloadBtn" style="display:none;" onclick="downloadCSV()">Download Converted Roster CSV</button>
+        <button class="btn btn-success" id="downloadBtn" style="display:none;" onclick="downloadCSV()">Download Cleaned Talon Roster CSV</button>
 
         <div class="output-table" id="outputArea"></div>
     </div>
 
     <script>
-        let fullConvertedRows = [];
-        let originalHeaders = [];
+        let cleanedRows = [];
+        const cleanHeaders = ['A Number', 'Last Name', 'First Name', 'Banner Course', 'Email', 'Talon Course'];
 
-        // Simple Robust CSV parser handling quoted values
+        // Robust CSV Line Parser
         function parseCSVLine(text) {
             let result = [];
             let cur = '';
@@ -321,25 +321,21 @@
             return result;
         }
 
-        // Get live radio button selections keyed by course code (e.g. "2350") & full name
+        // Get radio button mappings
         function getMappings() {
             const codeMap = {};
-            const titleMap = {};
             const rows = document.querySelectorAll("#mappingForm tbody tr");
             
             rows.forEach(row => {
                 const code = row.getAttribute('data-code');
-                const bannerName = row.querySelector('.course-name').getAttribute('data-banner');
                 const checked = row.querySelector('input[type="radio"]:checked');
                 const talonCourse = checked ? checked.value : "UNMAPPED";
-                
                 if (code) codeMap[code] = talonCourse;
-                if (bannerName) titleMap[bannerName.toLowerCase()] = talonCourse;
             });
-            return { codeMap, titleMap };
+            return codeMap;
         }
 
-        // Handle uploaded CSV file
+        // Read File
         document.getElementById('fileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -350,13 +346,13 @@
             reader.readAsText(file);
         });
 
-        // Convert the loaded roster
+        // Convert function filtering out non-essential columns
         function convertRoster() {
-            const { codeMap, titleMap } = getMappings();
+            const codeMap = getMappings();
             const inputTxt = document.getElementById('rosterInput').value.trim();
             
             if (!inputTxt) {
-                alert("Please upload CourseRoster.csv or paste CSV text first.");
+                alert("Please upload CourseRoster.csv or paste CSV content first.");
                 return;
             }
 
@@ -365,8 +361,8 @@
 
             const headerRow = parseCSVLine(rawLines[0]);
             
-            // Identify key Banner column indexes
-            let colANumber = headerRow.findIndex(h => h.toLowerCase().includes('a number') || h.toLowerCase().includes('id'));
+            // Locating essential field indices
+            let colANumber = headerRow.findIndex(h => h.toLowerCase().includes('a number') || h.toLowerCase() === 'id');
             let colLastName = headerRow.findIndex(h => h.toLowerCase().includes('last name'));
             let colFirstName = headerRow.findIndex(h => h.toLowerCase().includes('first name'));
             let colSubject = headerRow.findIndex(h => h.toLowerCase().includes('subject'));
@@ -375,20 +371,16 @@
 
             let hasHeader = (colANumber !== -1 || colCourse !== -1);
             let startIndex = hasHeader ? 1 : 0;
-            
-            originalHeaders = hasHeader ? headerRow : ['Student ID', 'Last Name', 'First Name', 'Banner Course'];
-            if (!originalHeaders.includes('Talon Course')) {
-                originalHeaders.push('Talon Course');
-            }
 
-            fullConvertedRows = [];
-            let tableHtml = `<h3>Converted Roster (${rawLines.length - startIndex} Students)</h3>`;
+            cleanedRows = [];
+            let tableHtml = `<h3>Cleaned Talon Roster (${rawLines.length - startIndex} Students)</h3>`;
             tableHtml += `<table><thead><tr>
                 <th>A Number</th>
-                <th>Student Name</th>
-                <th>Subject / Course</th>
-                <th>Matched Talon Course</th>
+                <th>Last Name</th>
+                <th>First Name</th>
+                <th>Banner Course</th>
                 <th>Email</th>
+                <th>Mapped Talon Course</th>
             </tr></thead><tbody>`;
 
             for (let i = startIndex; i < rawLines.length; i++) {
@@ -404,11 +396,10 @@
 
                 let displayCourse = subject ? `${subject} ${courseVal}` : courseVal;
 
-                // Match algorithm: 1) numeric course code, 2) title text
+                // Match against mapped course code
                 let talonMatch = "UNMAPPED";
                 let matched = false;
-
-                // Match numeric code (e.g., 2350)
+                
                 for (let code in codeMap) {
                     if (courseVal.toString().trim() === code || displayCourse.includes(code)) {
                         talonMatch = codeMap[code];
@@ -417,35 +408,17 @@
                     }
                 }
 
-                // Fallback fuzzy title match
-                if (!matched) {
-                    for (let title in titleMap) {
-                        if (displayCourse.toLowerCase().includes(title) || title.includes(displayCourse.toLowerCase())) {
-                            talonMatch = titleMap[title];
-                            matched = true;
-                            break;
-                        }
-                    }
-                }
-
-                // Create full record for export
-                let updatedRow = [...cols];
-                let talonColIdx = originalHeaders.indexOf('Talon Course');
-                if (talonColIdx < updatedRow.length) {
-                    updatedRow[talonColIdx] = talonMatch;
-                } else {
-                    updatedRow.push(talonMatch);
-                }
-                fullConvertedRows.push(updatedRow);
+                cleanedRows.push([aNum, lastName, firstName, displayCourse, email, talonMatch]);
 
                 let badgeClass = matched ? 'badge' : 'badge badge-unmapped';
 
                 tableHtml += `<tr>
                     <td>${aNum}</td>
-                    <td style="text-align:left;">${lastName}${lastName && firstName ? ', ' : ''}${firstName}</td>
+                    <td style="text-align:left;">${lastName}</td>
+                    <td style="text-align:left;">${firstName}</td>
                     <td>${displayCourse}</td>
-                    <td><span class="${badgeClass}">${talonMatch}</span></td>
                     <td style="text-align:left;">${email}</td>
+                    <td><span class="${badgeClass}">${talonMatch}</span></td>
                 </tr>`;
             }
 
@@ -454,12 +427,12 @@
             document.getElementById('downloadBtn').style.display = 'inline-block';
         }
 
-        // Export converted file back to CSV format
+        // Download filtered CSV
         function downloadCSV() {
-            if (fullConvertedRows.length === 0) return;
+            if (cleanedRows.length === 0) return;
 
-            let csvStr = originalHeaders.map(h => `"${h}"`).join(',') + '\n';
-            fullConvertedRows.forEach(row => {
+            let csvStr = cleanHeaders.map(h => `"${h}"`).join(',') + '\n';
+            cleanedRows.forEach(row => {
                 csvStr += row.map(val => `"${(val || '').replace(/"/g, '""')}"`).join(',') + '\n';
             });
 
@@ -467,7 +440,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", "Converted_Talon_Roster.csv");
+            link.setAttribute("download", "Talon_Course_Roster_Cleaned.csv");
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
