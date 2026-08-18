@@ -464,7 +464,6 @@
             const selectedLocation = document.getElementById('locationSelect').value;
             const selectedAction = document.querySelector('input[name="actionType"]:checked').value;
             
-            // Get combined term string (used for both reg_term_disname & class_disname)
             const selectedSemester = document.getElementById('semesterSelect').value;
             const selectedYear = document.getElementById('yearSelect').value;
             const termAndClassVal = `${selectedSemester} ${selectedYear}`;
@@ -496,15 +495,17 @@
 
                 rows.forEach((row) => {
                     const studentId = row['a-number'] || row['anumber'] || row['a number'] || row['a_number'] || row['student id'] || row['student_id'] || row['id'] || '';
-                    const firstName = (row['first name'] || row['firstname'] || row['first'] || row['fname'] || '').toUpperCase();
-                    const middleName = (row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '').toUpperCase();
-                    const lastName = (row['last name'] || row['lastname'] || row['last'] || row['lname'] || '').toUpperCase();
+                    
+                    // Preserving raw capitalization from the source
+                    const firstName = row['first name'] || row['firstname'] || row['first'] || row['fname'] || '';
+                    const middleName = row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '';
+                    const lastName = row['last name'] || row['lastname'] || row['last'] || row['lname'] || '';
                     const email = row['email'] || row['local_email'] || row['student_email'] || row['mail'] || '';
                     
                     const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
                     const courseName = rawCourse.trim();
 
-                    // Format: LASTNAME, F.
+                    // Format: LastName, F.
                     const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
                     const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
 
