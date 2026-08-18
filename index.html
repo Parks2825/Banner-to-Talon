@@ -11,7 +11,7 @@
             background-color: #f4f6f9;
             color: #333;
         }
-        h2, h3 {
+        h2 {
             color: #003262; /* USU Blue */
         }
         .card {
@@ -134,7 +134,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Private Pilot Certification 2350 -->
                         <tr data-course="Private Pilot Certification 2350">
                             <td class="course-name">Private Pilot Certification 2350</td>
                             <td><input type="radio" name="b_Private Pilot Certification 2350" value="AV25XX Time Bldg"></td>
@@ -152,8 +151,6 @@
                             <td><input type="radio" name="b_Private Pilot Certification 2350" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_Private Pilot Certification 2350" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- Cross Country - Commercial Stage 1 2450 -->
                         <tr data-course="Cross Country - Commercial Stage 1 2450">
                             <td class="course-name">Cross Country - Commercial Stage 1 2450</td>
                             <td><input type="radio" name="b_Cross Country - Commercial Stage 1 2450" value="AV25XX Time Bldg"></td>
@@ -171,8 +168,6 @@
                             <td><input type="radio" name="b_Cross Country - Commercial Stage 1 2450" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_Cross Country - Commercial Stage 1 2450" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- Challenge Cross Country - Commercial Stage 1 2451 -->
                         <tr data-course="Challenge Cross Country - Commercial Stage 1 2451">
                             <td class="course-name">Challenge Cross Country - Commercial Stage 1 2451</td>
                             <td><input type="radio" name="b_Challenge Cross Country - Commercial Stage 1 2451" value="AV25XX Time Bldg"></td>
@@ -190,8 +185,6 @@
                             <td><input type="radio" name="b_Challenge Cross Country - Commercial Stage 1 2451" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_Challenge Cross Country - Commercial Stage 1 2451" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- Instrument Pilot Certification 2540 -->
                         <tr data-course="Instrument Pilot Certification 2540">
                             <td class="course-name">Instrument Pilot Certification 2540</td>
                             <td><input type="radio" name="b_Instrument Pilot Certification 2540" value="AV25XX Time Bldg"></td>
@@ -209,8 +202,6 @@
                             <td><input type="radio" name="b_Instrument Pilot Certification 2540" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_Instrument Pilot Certification 2540" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- Advanced Maneuvers - Commercial Stage 2 2660 -->
                         <tr data-course="Advanced Maneuvers - Commercial Stage 2 2660">
                             <td class="course-name">Advanced Maneuvers - Commercial Stage 2 2660</td>
                             <td><input type="radio" name="b_Advanced Maneuvers - Commercial Stage 2 2660" value="AV25XX Time Bldg"></td>
@@ -228,8 +219,6 @@
                             <td><input type="radio" name="b_Advanced Maneuvers - Commercial Stage 2 2660" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_Advanced Maneuvers - Commercial Stage 2 2660" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- Commercial Single Engine Certification - Commercial Stage 3 3410 -->
                         <tr data-course="Commercial Single Engine Certification - Commercial Stage 3 3410">
                             <td class="course-name">Commercial Single Engine Certification - Commercial Stage 3 3410</td>
                             <td><input type="radio" name="b_Commercial Single Engine Certification - Commercial Stage 3 3410" value="AV25XX Time Bldg"></td>
@@ -247,8 +236,6 @@
                             <td><input type="radio" name="b_Commercial Single Engine Certification - Commercial Stage 3 3410" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_Commercial Single Engine Certification - Commercial Stage 3 3410" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- CFI Certification 3740 -->
                         <tr data-course="CFI Certification 3740">
                             <td class="course-name">CFI Certification 3740</td>
                             <td><input type="radio" name="b_CFI Certification 3740" value="AV25XX Time Bldg"></td>
@@ -266,8 +253,6 @@
                             <td><input type="radio" name="b_CFI Certification 3740" value="USU COMMERCIAL"></td>
                             <td><input type="radio" name="b_CFI Certification 3740" value="USU INSTRMNT V3"></td>
                         </tr>
-
-                        <!-- Commercial Multi-Engine Add-On 3880 -->
                         <tr data-course="Commercial Multi-Engine Add-On 3880">
                             <td class="course-name">Commercial Multi-Engine Add-On 3880</td>
                             <td><input type="radio" name="b_Commercial Multi-Engine Add-On 3880" value="AV25XX Time Bldg"></td>
@@ -405,7 +390,6 @@
 
             window.processedTalonData = [];
 
-            // Location derived mappings
             let persSubtype = "LOGAN STUDENT";
             let siteDisname = "Logan";
 
@@ -427,11 +411,10 @@
                 const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
                 const courseName = rawCourse.trim();
 
-                // Format: Last Name, First Initial.
+                // Format: LASTNAME, F.
                 const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
                 const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
 
-                // Course lookup
                 let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
                 
                 if (!talonCourse) {
@@ -450,7 +433,6 @@
                 talonCourse = talonCourse || 'Unmapped';
                 const isMapped = talonCourse !== 'Unmapped';
 
-                // Display UI Row
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${siteDisname}</td>
@@ -480,7 +462,7 @@
                         "uname": studentId,
                         "chg_password": "yes",
                         "chg_pin": "yes",
-                        "status": "active ",
+                        "status": "active",
                         "pers_subtype_disname": persSubtype,
                         "acnt_type_disname": "<default>",
                         "reg_term_disname": "<default>",
@@ -488,9 +470,9 @@
                         "curr_status": "active",
                         "first_sched_date": "08 Aug 2026",
                         "team_disname": "Fixed Wing",
-                        "cntrct_disname": "<default> ",
+                        "cntrct_disname": "<default>",
                         "trng_cal_disname": "CTF",
-                        "class_disname": "<default> ",
+                        "class_disname": "<default>",
                         "user_type_disname": "Student",
                         "local_email": email,
                         "site_disname": siteDisname
@@ -507,7 +489,6 @@
                 return;
             }
 
-            // Exact 28 Headers matching your spec
             const headers = [
                 "header", "customer_code", "api_code", "api_action", "loc_disname", 
                 "pers_type", "pers_disname", "eta_id", "fname", "mname", "lname", 
@@ -515,13 +496,15 @@
                 "acnt_type_disname", "reg_term_disname", "curr_lvl1_disname", 
                 "curr_status", "first_sched_date", "team_disname", "cntrct_disname", 
                 "trng_cal_disname", "class_disname", "user_type_disname", "local_email", 
-                "site_disname", ""
+                "site_disname"
             ];
 
-            let fileContent = headers.slice(0, -1).join(';') + ';\n';
+            // Header line starts with "header;" and ends with "site_disname;"
+            let fileContent = 'header;' + headers.slice(1).join(';') + ';\n';
 
+            // Data lines start with field 1 and end with "site_disname;"
             window.processedTalonData.forEach(item => {
-                const row = headers.slice(0, -1).map(h => item[h] || '');
+                const row = headers.map(h => item[h] || '');
                 fileContent += row.join(';') + ';\n';
             });
 
