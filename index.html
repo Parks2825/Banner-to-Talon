@@ -103,6 +103,11 @@
         .badge-unmapped {
             background-color: #dc3545;
         }
+        .file-list {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -278,7 +283,7 @@
 
     <!-- SECTION 2: FILE INPUT & CONVERSION -->
     <div class="card">
-        <h2>2. Import Banner CSV Roster</h2>
+        <h2>2. Import Banner CSV Rosters</h2>
         
         <div class="form-group">
             <label for="locationSelect">Target Location / Campus:</label>
@@ -290,11 +295,12 @@
         </div>
 
         <div class="form-group">
-            <label for="csvFileInput">Upload Roster File:</label>
-            <input type="file" id="csvFileInput" accept=".csv,.txt">
+            <label for="csvFileInput">Upload Roster Files (Select Multiple):</label>
+            <input type="file" id="csvFileInput" accept=".csv,.txt" multiple>
+            <div id="fileList" class="file-list"></div>
         </div>
 
-        <button class="btn" id="btnProcess">Process Roster</button>
+        <button class="btn" id="btnProcess">Process Rosters</button>
     </div>
 
     <!-- SECTION 3: OUTPUT RESULTS -->
@@ -304,6 +310,7 @@
             <table id="resultTable">
                 <thead>
                     <tr>
+                        <th>Source File</th>
                         <th>Site</th>
                         <th>Student ID / A-Number</th>
                         <th>First Name</th>
@@ -322,16 +329,29 @@
     </div>
 
     <script>
-        window.rawCsvText = "";
+        window.uploadedFiles = [];
 
         document.getElementById('csvFileInput').addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function (evt) {
-                window.rawCsvText = evt.target.result;
-            };
-            reader.readAsText(file);
+            const files = Array.from(e.target.files);
+            const fileListDiv = document.getElementById('fileList');
+            window.uploadedFiles = [];
+            fileListDiv.innerHTML = '';
+
+            if (files.length === 0) return;
+
+            let loadedCount = 0;
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (evt) {
+                    window.uploadedFiles.push({
+                        fileName: file.name,
+                        content: evt.target.result
+                    });
+                    loadedCount++;
+                    fileListDiv.innerHTML += `<div>📄 ${file.name}</div>`;
+                };
+                reader.readAsText(file);
+            });
         });
 
         function parseCSV(text) {
@@ -375,15 +395,14 @@
         }
 
         document.getElementById('btnProcess').addEventListener('click', function () {
-            const rawText = window.rawCsvText;
+            const filesData = window.uploadedFiles;
             const selectedLocation = document.getElementById('locationSelect').value;
 
-            if (!rawText || !rawText.trim()) {
-                alert('Please upload a roster file first.');
+            if (!filesData || filesData.length === 0) {
+                alert('Please upload at least one roster file first.');
                 return;
             }
 
-            const rows = parseCSV(rawText);
             const mappings = getMappingRules();
             const resultBody = document.getElementById('resultBody');
             resultBody.innerHTML = '';
@@ -401,83 +420,88 @@
                 siteDisname = "Brigham City";
             }
 
-            rows.forEach((row) => {
-                const studentId = row['a-number'] || row['anumber'] || row['a number'] || row['a_number'] || row['student id'] || row['student_id'] || row['id'] || '';
-                const firstName = (row['first name'] || row['firstname'] || row['first'] || row['fname'] || '').toUpperCase();
-                const middleName = (row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '').toUpperCase();
-                const lastName = (row['last name'] || row['lastname'] || row['last'] || row['lname'] || '').toUpperCase();
-                const email = row['email'] || row['local_email'] || row['student_email'] || row['mail'] || '';
-                
-                const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
-                const courseName = rawCourse.trim();
+            filesData.forEach(fileObj => {
+                const rows = parseCSV(fileObj.content);
 
-                // Format: LASTNAME, F.
-                const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
-                const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
+                rows.forEach((row) => {
+                    const studentId = row['a-number'] || row['anumber'] || row['a number'] || row['a_number'] || row['student id'] || row['student_id'] || row['id'] || '';
+                    const firstName = (row['first name'] || row['firstname'] || row['first'] || row['fname'] || '').toUpperCase();
+                    const middleName = (row['middle name'] || row['middlename'] || row['middle'] || row['mname'] || '').toUpperCase();
+                    const lastName = (row['last name'] || row['lastname'] || row['last'] || row['lname'] || '').toUpperCase();
+                    const email = row['email'] || row['local_email'] || row['student_email'] || row['mail'] || '';
+                    
+                    const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
+                    const courseName = rawCourse.trim();
 
-                let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
-                
-                if (!talonCourse) {
-                    const numberMatch = courseName.match(/\b(2350|2450|2451|2540|2660|3410|3740|3880)\b/);
-                    if (numberMatch) {
-                        const courseNum = numberMatch[1];
-                        for (let key in mappings) {
-                            if (key.includes(courseNum)) {
-                                talonCourse = mappings[key];
-                                break;
+                    // Format: LASTNAME, F.
+                    const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
+                    const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
+
+                    let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
+                    
+                    if (!talonCourse) {
+                        const numberMatch = courseName.match(/\b(2350|2450|2451|2540|2660|3410|3740|3880)\b/);
+                        if (numberMatch) {
+                            const courseNum = numberMatch[1];
+                            for (let key in mappings) {
+                                if (key.includes(courseNum)) {
+                                    talonCourse = mappings[key];
+                                    break;
+                                }
                             }
                         }
                     }
-                }
 
-                talonCourse = talonCourse || 'Unmapped';
-                const isMapped = talonCourse !== 'Unmapped';
+                    talonCourse = talonCourse || 'Unmapped';
+                    const isMapped = talonCourse !== 'Unmapped';
 
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${siteDisname}</td>
-                    <td>${studentId}</td>
-                    <td>${firstName}</td>
-                    <td>${middleName}</td>
-                    <td>${lastName}</td>
-                    <td>${courseName || '<span style="color:red;">[Course Column Not Found]</span>'}</td>
-                    <td><strong>${talonCourse}</strong></td>
-                    <td>${isMapped ? '<span class="badge">Mapped</span>' : '<span class="badge badge-unmapped">Unmapped</span>'}</td>
-                `;
-                resultBody.appendChild(tr);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="font-size: 11px; color: #666;">${fileObj.fileName}</td>
+                        <td>${siteDisname}</td>
+                        <td>${studentId}</td>
+                        <td>${firstName}</td>
+                        <td>${middleName}</td>
+                        <td>${lastName}</td>
+                        <td>${courseName || '<span style="color:red;">[Course Column Not Found]</span>'}</td>
+                        <td><strong>${talonCourse}</strong></td>
+                        <td>${isMapped ? '<span class="badge">Mapped</span>' : '<span class="badge badge-unmapped">Unmapped</span>'}</td>
+                    `;
+                    resultBody.appendChild(tr);
 
-                if (isMapped) {
-                    window.processedTalonData.push({
-                        "header": "data",
-                        "customer_code": "usu",
-                        "api_code": "person",
-                        "api_action": "add",
-                        "loc_disname": "USU NEW",
-                        "pers_type": "student",
-                        "pers_disname": persDisname,
-                        "eta_id": studentId,
-                        "fname": firstName,
-                        "mname": middleName,
-                        "lname": lastName,
-                        "uname": studentId,
-                        "chg_password": "yes",
-                        "chg_pin": "yes",
-                        "status": "active",
-                        "pers_subtype_disname": persSubtype,
-                        "acnt_type_disname": "<default>",
-                        "reg_term_disname": "<default>",
-                        "curr_lvl1_disname": talonCourse,
-                        "curr_status": "active",
-                        "first_sched_date": "08 Aug 2026",
-                        "team_disname": "Fixed Wing",
-                        "cntrct_disname": "<default>",
-                        "trng_cal_disname": "CTF",
-                        "class_disname": "<default>",
-                        "user_type_disname": "Student",
-                        "local_email": email,
-                        "site_disname": siteDisname
-                    });
-                }
+                    if (isMapped) {
+                        window.processedTalonData.push({
+                            "header": "data",
+                            "customer_code": "usu",
+                            "api_code": "person",
+                            "api_action": "add",
+                            "loc_disname": "USU NEW",
+                            "pers_type": "student",
+                            "pers_disname": persDisname,
+                            "eta_id": studentId,
+                            "fname": firstName,
+                            "mname": middleName,
+                            "lname": lastName,
+                            "uname": studentId,
+                            "chg_password": "yes",
+                            "chg_pin": "yes",
+                            "status": "active",
+                            "pers_subtype_disname": persSubtype,
+                            "acnt_type_disname": "<default>",
+                            "reg_term_disname": "<default>",
+                            "curr_lvl1_disname": talonCourse,
+                            "curr_status": "active",
+                            "first_sched_date": "08 Aug 2026",
+                            "team_disname": "Fixed Wing",
+                            "cntrct_disname": "<default>",
+                            "trng_cal_disname": "CTF",
+                            "class_disname": "<default>",
+                            "user_type_disname": "Student",
+                            "local_email": email,
+                            "site_disname": siteDisname
+                        });
+                    }
+                });
             });
 
             document.getElementById('outputCard').style.display = 'block';
@@ -499,10 +523,8 @@
                 "site_disname"
             ];
 
-            // Header line starts with "header;" and ends with "site_disname;"
             let fileContent = 'header;' + headers.slice(1).join(';') + ';\n';
 
-            // Data lines start with field 1 and end with "site_disname;"
             window.processedTalonData.forEach(item => {
                 const row = headers.map(h => item[h] || '');
                 fileContent += row.join(';') + ';\n';
@@ -512,7 +534,7 @@
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.setAttribute('href', url);
-            link.setAttribute('download', 'Talon_Roster_Import.txt');
+            link.setAttribute('download', 'Talon_Batch_Roster_Import.txt');
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
