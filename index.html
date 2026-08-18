@@ -3,22 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Banner to Talon Course Mapping</title>
+    <title>Banner to Talon Course Mapping & Roster Converter</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            background-color: #f9f9f9;
+            background-color: #f4f6f9;
+            color: #333;
         }
-        h2 {
+        h2, h3 {
             color: #003262; /* USU Blue */
+        }
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
         }
         .table-container {
             overflow-x: auto;
-            background: #fff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         table {
             border-collapse: collapse;
@@ -37,7 +41,7 @@
             font-weight: bold;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
         tr:hover {
             background-color: #e8f4fc;
@@ -50,183 +54,331 @@
         input[type="radio"] {
             cursor: pointer;
         }
+        textarea {
+            width: 100%;
+            height: 120px;
+            font-family: monospace;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .btn {
+            background-color: #003262;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+        .btn:hover {
+            background-color: #002144;
+        }
+        .btn-success {
+            background-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        .file-input-group {
+            margin-bottom: 15px;
+        }
+        .output-table {
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <h2>USU Aviation: Banner to Talon Course Mapping</h2>
+    <!-- SECTION 1: MAPPING SELECTION -->
+    <div class="card">
+        <h2>1. USU Aviation: Banner to Talon Course Mapping Rules</h2>
+        <p>Select which Talon Course corresponds to each Banner Course:</p>
+        <form id="mappingForm">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Banner Course</th>
+                            <th>AV25XX Time Bldg</th>
+                            <th>FW ACCLRATD COMM</th>
+                            <th>FW AD MAN v2</th>
+                            <th>FW CFI v3 BC</th>
+                            <th>FW CFI v3.2</th>
+                            <th>FW CFI v3.2 BC</th>
+                            <th>FW COM SE v2</th>
+                            <th>FW CXC v2</th>
+                            <th>FW INSTRMNT</th>
+                            <th>FW USU Private2</th>
+                            <th>FW USU PVT2 FP</th>
+                            <th>FW XC v2</th>
+                            <th>USU COMMERCIAL</th>
+                            <th>USU INSTRMNT V3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="course-name" data-banner="Private Pilot Certification 2350">Private Pilot Certification 2350</td>
+                            <td><input type="radio" name="b_2350" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_2350" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_2350" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_2350" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_2350" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_2350" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_2350" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_2350" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_2350" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_2350" value="FW USU Private2" checked></td>
+                            <td><input type="radio" name="b_2350" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_2350" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_2350" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_2350" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="Cross Country - Commercial Stage 1 2450">Cross Country - Commercial Stage 1 2450</td>
+                            <td><input type="radio" name="b_2450" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_2450" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_2450" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_2450" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_2450" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_2450" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_2450" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_2450" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_2450" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_2450" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_2450" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_2450" value="FW XC v2" checked></td>
+                            <td><input type="radio" name="b_2450" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_2450" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="Challenge Cross Country - Commercial Stage 1 2451">Challenge Cross Country - Commercial Stage 1 2451</td>
+                            <td><input type="radio" name="b_2451" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_2451" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_2451" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_2451" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_2451" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_2451" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_2451" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_2451" value="FW CXC v2" checked></td>
+                            <td><input type="radio" name="b_2451" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_2451" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_2451" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_2451" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_2451" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_2451" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="Instrument Pilot Certification 2540">Instrument Pilot Certification 2540</td>
+                            <td><input type="radio" name="b_2540" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_2540" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_2540" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_2540" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_2540" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_2540" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_2540" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_2540" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_2540" value="FW INSTRMNT" checked></td>
+                            <td><input type="radio" name="b_2540" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_2540" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_2540" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_2540" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_2540" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="Advanced Maneuvers - Commercial Stage 2 2660">Advanced Maneuvers - Commercial Stage 2 2660</td>
+                            <td><input type="radio" name="b_2660" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_2660" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_2660" value="FW AD MAN v2" checked></td>
+                            <td><input type="radio" name="b_2660" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_2660" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_2660" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_2660" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_2660" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_2660" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_2660" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_2660" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_2660" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_2660" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_2660" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="Commercial Single Engine Certification - Commercial Stage 3 3410">Commercial Single Engine Certification - Commercial Stage 3 3410</td>
+                            <td><input type="radio" name="b_3410" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_3410" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_3410" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_3410" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_3410" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_3410" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_3410" value="FW COM SE v2" checked></td>
+                            <td><input type="radio" name="b_3410" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_3410" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_3410" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_3410" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_3410" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_3410" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_3410" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="CFI Certification 3740">CFI Certification 3740</td>
+                            <td><input type="radio" name="b_3740" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_3740" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_3740" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_3740" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_3740" value="FW CFI v3.2" checked></td>
+                            <td><input type="radio" name="b_3740" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_3740" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_3740" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_3740" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_3740" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_3740" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_3740" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_3740" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_3740" value="USU INSTRMNT V3"></td>
+                        </tr>
+                        <tr>
+                            <td class="course-name" data-banner="Commercial Multi-Engine Add-On 3880">Commercial Multi-Engine Add-On 3880</td>
+                            <td><input type="radio" name="b_3880" value="AV25XX Time Bldg"></td>
+                            <td><input type="radio" name="b_3880" value="FW ACCLRATD COMM"></td>
+                            <td><input type="radio" name="b_3880" value="FW AD MAN v2"></td>
+                            <td><input type="radio" name="b_3880" value="FW CFI v3 BC"></td>
+                            <td><input type="radio" name="b_3880" value="FW CFI v3.2"></td>
+                            <td><input type="radio" name="b_3880" value="FW CFI v3.2 BC"></td>
+                            <td><input type="radio" name="b_3880" value="FW COM SE v2"></td>
+                            <td><input type="radio" name="b_3880" value="FW CXC v2"></td>
+                            <td><input type="radio" name="b_3880" value="FW INSTRMNT"></td>
+                            <td><input type="radio" name="b_3880" value="FW USU Private2"></td>
+                            <td><input type="radio" name="b_3880" value="FW USU PVT2 FP"></td>
+                            <td><input type="radio" name="b_3880" value="FW XC v2"></td>
+                            <td><input type="radio" name="b_3880" value="USU COMMERCIAL"></td>
+                            <td><input type="radio" name="b_3880" value="USU INSTRMNT V3"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
 
-    <form id="courseMappingForm">
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="text-align: left;">Banner Course</th>
-                        <th>AV25XX Time Bldg</th>
-                        <th>FW ACCLRATD COMM</th>
-                        <th>FW AD MAN v2</th>
-                        <th>FW CFI v3 BC</th>
-                        <th>FW CFI v3.2</th>
-                        <th>FW CFI v3.2 BC</th>
-                        <th>FW COM SE v2</th>
-                        <th>FW CXC v2</th>
-                        <th>FW INSTRMNT</th>
-                        <th>FW USU Private2</th>
-                        <th>FW USU PVT2 FP</th>
-                        <th>FW XC v2</th>
-                        <th>USU COMMERCIAL</th>
-                        <th>USU INSTRMNT V3</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Private Pilot Certification 2350 -->
-                    <tr>
-                        <td class="course-name">Private Pilot Certification 2350</td>
-                        <td><input type="radio" name="banner_2350" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_USU_Private2" checked></td>
-                        <td><input type="radio" name="banner_2350" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_2350" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_2350" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_2350" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- Cross Country - Commercial Stage 1 2450 -->
-                    <tr>
-                        <td class="course-name">Cross Country - Commercial Stage 1 2450</td>
-                        <td><input type="radio" name="banner_2450" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_2450" value="FW_XC_v2" checked></td>
-                        <td><input type="radio" name="banner_2450" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_2450" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- Challenge Cross Country - Commercial Stage 1 2451 -->
-                    <tr>
-                        <td class="course-name">Challenge Cross Country - Commercial Stage 1 2451</td>
-                        <td><input type="radio" name="banner_2451" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_CXC_v2" checked></td>
-                        <td><input type="radio" name="banner_2451" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_2451" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_2451" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_2451" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- Instrument Pilot Certification 2540 -->
-                    <tr>
-                        <td class="course-name">Instrument Pilot Certification 2540</td>
-                        <td><input type="radio" name="banner_2540" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_INSTRMNT" checked></td>
-                        <td><input type="radio" name="banner_2540" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_2540" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_2540" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_2540" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- Advanced Maneuvers - Commercial Stage 2 2660 -->
-                    <tr>
-                        <td class="course-name">Advanced Maneuvers - Commercial Stage 2 2660</td>
-                        <td><input type="radio" name="banner_2660" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_AD_MAN_v2" checked></td>
-                        <td><input type="radio" name="banner_2660" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_2660" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_2660" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_2660" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- Commercial Single Engine Certification - Commercial Stage 3 3410 -->
-                    <tr>
-                        <td class="course-name">Commercial Single Engine Certification - Commercial Stage 3 3410</td>
-                        <td><input type="radio" name="banner_3410" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_COM_SE_v2" checked></td>
-                        <td><input type="radio" name="banner_3410" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_3410" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_3410" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_3410" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- CFI Certification 3740 -->
-                    <tr>
-                        <td class="course-name">CFI Certification 3740</td>
-                        <td><input type="radio" name="banner_3740" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_CFI_v3.2" checked></td>
-                        <td><input type="radio" name="banner_3740" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_3740" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_3740" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_3740" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                    <!-- Commercial Multi-Engine Add-On 3880 -->
-                    <tr>
-                        <td class="course-name">Commercial Multi-Engine Add-On 3880</td>
-                        <td><input type="radio" name="banner_3880" value="AV25XX"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_ACCLRATD_COMM"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_AD_MAN_v2"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_CFI_v3_BC"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_CFI_v3.2"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_CFI_v3.2_BC"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_COM_SE_v2"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_CXC_v2"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_INSTRMNT"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_USU_Private2"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_USU_PVT2_FP"></td>
-                        <td><input type="radio" name="banner_3880" value="FW_XC_v2"></td>
-                        <td><input type="radio" name="banner_3880" value="USU_COMMERCIAL"></td>
-                        <td><input type="radio" name="banner_3880" value="USU_INSTRMNT_V3"></td>
-                    </tr>
-                </tbody>
-            </table>
+    <!-- SECTION 2: ROSTER CONVERTER -->
+    <div class="card">
+        <h2>2. Load & Convert Course Roster</h2>
+        
+        <div class="file-input-group">
+            <label for="fileInput"><strong>Option A: Upload Roster CSV File</strong></label><br>
+            <input type="file" id="fileInput" accept=".csv, .txt">
         </div>
-    </form>
 
+        <div>
+            <label for="rosterInput"><strong>Option B: Or Paste CSV/Text Data Here:</strong></label><br>
+            <small>Format expected: <i>Student ID, Student Name, Banner Course</i></small><br>
+            <textarea id="rosterInput" placeholder="A00123456, John Doe, Private Pilot Certification 2350
+A00987654, Jane Smith, Instrument Pilot Certification 2540
+A00555444, Bob Johnson, CFI Certification 3740"></textarea>
+        </div>
+
+        <button class="btn" onclick="convertRoster()">Convert Roster to Talon</button>
+        <button class="btn btn-success" id="downloadBtn" style="display:none;" onclick="downloadCSV()">Download Converted CSV</button>
+
+        <div class="output-table" id="outputArea"></div>
+    </div>
+
+    <script>
+        let convertedData = [];
+
+        // Build mapping rules from currently selected radio buttons
+        function getMappingRules() {
+            const rules = {};
+            const rows = document.querySelectorAll("#mappingForm tbody tr");
+            
+            rows.forEach(row => {
+                const bannerName = row.querySelector('.course-name').getAttribute('data-banner');
+                const checkedRadio = row.querySelector('input[type="radio"]:checked');
+                rules[bannerName.trim()] = checkedRadio ? checkedRadio.value : "UNMAPPED";
+            });
+            return rules;
+        }
+
+        // Handle uploaded CSV file loading
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                document.getElementById('rosterInput').value = evt.target.result;
+            };
+            reader.readAsText(file);
+        });
+
+        // Convert the input roster using the live mapping rules
+        function convertRoster() {
+            const rules = getMappingRules();
+            const inputTxt = document.getElementById('rosterInput').value.trim();
+            
+            if (!inputTxt) {
+                alert("Please paste data or upload a file first.");
+                return;
+            }
+
+            const lines = inputTxt.split(/\r?\n/);
+            convertedData = [];
+            let htmlOutput = "<h3>Converted Roster Output</h3><table><thead><tr><th>Student ID / Info</th><th>Student Name</th><th>Original Banner Course</th><th>Mapped Talon Course</th></tr></thead><tbody>";
+
+            lines.forEach((line) => {
+                if (!line.trim()) return;
+                
+                // Parse CSV fields (splitting by comma)
+                const parts = line.split(',').map(item => item.trim());
+                
+                let id = parts[0] || "";
+                let name = parts[1] || "";
+                let bannerCourse = parts[2] || parts[0]; // Fallback if only course name is pasted
+
+                // Find matching Talon Course
+                let talonMatch = "UNMAPPED / NOT FOUND";
+                
+                // Fuzzy match against active mappings
+                for (let key in rules) {
+                    if (bannerCourse.toLowerCase().includes(key.toLowerCase()) || key.toLowerCase().includes(bannerCourse.toLowerCase())) {
+                        talonMatch = rules[key];
+                        break;
+                    }
+                }
+
+                convertedData.push({ id, name, bannerCourse, talonMatch });
+
+                htmlOutput += `<tr>
+                    <td>${id}</td>
+                    <td>${name}</td>
+                    <td>${bannerCourse}</td>
+                    <td style="font-weight:bold; color:#003262;">${talonMatch}</td>
+                </tr>`;
+            });
+
+            htmlOutput += "</tbody></table>";
+            document.getElementById('outputArea').innerHTML = htmlOutput;
+            document.getElementById('downloadBtn').style.display = "inline-block";
+        }
+
+        // Export converted data to downloadable CSV
+        function downloadCSV() {
+            if (convertedData.length === 0) return;
+
+            let csvContent = "data:text/csv;charset=utf-8,Student ID,Student Name,Banner Course,Talon Course\n";
+            convertedData.forEach(row => {
+                csvContent += `"${row.id}","${row.name}","${row.bannerCourse}","${row.talonMatch}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Talon_Converted_Roster.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
 </body>
 </html>
