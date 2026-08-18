@@ -320,7 +320,7 @@
                 <thead>
                     <tr>
                         <th>Location</th>
-                        <th>Student ID</th>
+                        <th>Student ID / A-Number</th>
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Banner Course</th>
@@ -411,8 +411,9 @@
             window.processedTalonData = [];
 
             rows.forEach((row, index) => {
-                // Flexible field matching across various Banner CSV headers
-                const studentId = row['student id'] || row['id'] || row['a-number'] || row['anumber'] || row['student_id'] || 'N/A';
+                // Directly map A-Number / Student ID field variants from Banner CSV
+                const studentId = row['a-number'] || row['anumber'] || row['a number'] || row['a_number'] || row['student id'] || row['student_id'] || row['id'] || 'N/A';
+                
                 const firstName = (row['first name'] || row['firstname'] || row['first'] || row['fname'] || '').toUpperCase();
                 const lastName = (row['last name'] || row['lastname'] || row['last'] || row['lname'] || '').toUpperCase();
                 const username = (row['uname'] || row['username'] || row['user_id'] || lastName).toUpperCase();
