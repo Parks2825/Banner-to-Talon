@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Matcher Tool</title>
+    <!-- SheetJS for XLS/XLSX parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary: #2563eb;
@@ -43,10 +45,35 @@
             border: 1px solid var(--border);
         }
 
-        label {
-            display: block;
-            font-weight: 600;
+        .label-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 0.5rem;
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            background-color: #f1f5f9;
+            color: var(--text);
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .file-label:hover {
+            background-color: #e2e8f0;
         }
 
         textarea {
@@ -60,7 +87,7 @@
             resize: vertical;
         }
 
-        button {
+        .btn-match {
             background-color: var(--primary);
             color: white;
             border: none;
@@ -73,7 +100,7 @@
             transition: background 0.2s;
         }
 
-        button:hover {
+        .btn-match:hover {
             background-color: #1d4ed8;
         }
 
@@ -123,27 +150,36 @@
 
 <div class="container">
     <h1>Course List to Talon Matcher</h1>
-    <p>Paste your standard course list on the left and your Talon export/course list on the right.</p>
+    <p>Upload a CSV/Excel file or paste your Banner course list on the left and your Talon course list on the right.</p>
 
     <div class="input-grid">
         <div class="card">
-            <label for="sourceCourses">Your Course List (One per line)</label>
+            <div class="label-header">
+                <label for="sourceCourses">Banner Course List</label>
+                <label for="bannerFileInput" class="file-label">Upload CSV / XLS</label>
+                <input type="file" id="bannerFileInput" class="file-input" accept=".csv, .xls, .xlsx, .txt" onchange="handleFileUpload(event, 'sourceCourses')">
+            </div>
             <textarea id="sourceCourses" placeholder="e.g.&#10;ENG 101 - Composition I&#10;MATH 150 Precalculus&#10;CS 200: Intro to Python"></textarea>
         </div>
+
         <div class="card">
-            <label for="talonCourses">Talon Course List / URLs (One per line)</label>
+            <div class="label-header">
+                <label for="talonCourses">Talon Course List / URLs</label>
+                <label for="talonFileInput" class="file-label">Upload CSV / XLS</label>
+                <input type="file" id="talonFileInput" class="file-input" accept=".csv, .xls, .xlsx, .txt" onchange="handleFileUpload(event, 'talonCourses')">
+            </div>
             <textarea id="talonCourses" placeholder="e.g.&#10;2024FA-ENG-101-01 Composition I (https://talon.example.edu/d2l/home/12345)&#10;MATH 150-02 Precalculus - Fall 2024&#10;CS-200 Python Programming"></textarea>
         </div>
     </div>
 
-    <button onclick="matchCourses()">Match Courses</button>
+    <button class="btn-match" onclick="matchCourses()">Match Courses</button>
 
     <div class="results card" id="resultsCard" style="display: none;">
         <h2>Matched Results</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Original Course</th>
+                    <th>Banner Course</th>
                     <th>Matched Talon Course</th>
                     <th>Match Quality</th>
                 </tr>
@@ -154,6 +190,43 @@
 </div>
 
 <script>
+    // Handles reading CSV, TXT, XLS, and XLSX files directly into textareas
+    function handleFileUpload(event, targetTextareaId) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const fileName = file.name.toLowerCase();
+        const reader = new FileReader();
+
+        if (fileName.endsWith('.xls') || fileName.endsWith('.xlsx')) {
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // Get the first sheet
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Convert sheet to JSON rows
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                // Convert matrix/rows into line-by-line formatted text
+                const lines = jsonData
+                    .map(row => row.filter(cell => cell !== null && cell !== undefined).join(' '))
+                    .filter(line => line.trim() !== '');
+                
+                document.getElementById(targetTextareaId).value = lines.join('\n');
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            // CSV / TXT files
+            reader.onload = function(e) {
+                document.getElementById(targetTextareaId).value = e.target.result;
+            };
+            reader.readAsText(file);
+        }
+    }
+
     // Utility to extract course codes (e.g., ENG 101, MATH-150, CS200)
     function extractCode(str) {
         const match = str.match(/([a-zA-Z]{2,4})\s*[-_]?\s*(\d{3})/i);
