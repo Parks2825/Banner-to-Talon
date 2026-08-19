@@ -504,9 +504,10 @@
                     const rawCourse = row['course'] || row['course name'] || row['course title'] || row['title'] || row['crn title'] || row['code'] || '';
                     const courseName = rawCourse.trim();
 
-                    // Format: LastName, F. (Full length without truncation)
+                    // Format: LastName,F. (no space after comma) max 16 chars
                     const firstInitial = firstName ? firstName.charAt(0) + '.' : '';
-                    const persDisname = lastName ? (firstInitial ? `${lastName}, ${firstInitial}` : lastName) : '';
+                    let rawPersDisname = lastName ? (firstInitial ? `${lastName},${firstInitial}` : lastName) : '';
+                    const persDisname = rawPersDisname.slice(0, 16);
 
                     let talonCourse = mappings[courseName] || mappings[normalizeString(courseName)];
                     
